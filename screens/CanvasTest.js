@@ -1,5 +1,15 @@
 import React from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Modal,
+  Alert
+} from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
@@ -16,6 +26,8 @@ import Draggable from "react-native-draggable";
 import ViewShot from "react-native-view-shot";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+import { toggleLoading } from "../actions/loading";
+
 import {
   changeGarment,
   getDefaultItems,
@@ -27,7 +39,6 @@ class CanvasTest extends React.Component {
     super(props);
     this.state = {
       imageUri: "",
-      savingScreen: false,
       showGarment: true,
       showAddOns: true,
       showSaveProject: true,
@@ -199,18 +210,14 @@ class CanvasTest extends React.Component {
       details,
       "text/html"
     );
-    sendRequest
-      .then(response => {
-        console.log("email sent success");
-        return response;
-      })
-      .catch(error => {
-        console.log(error);
-      });
+
+    const response = await sendRequest;
+
+    return response;
   };
 
   screenshotHandler = async () => {
-    this.setState({ savingScreen: true });
+    this.props.toggleLoading(true);
     // console.log("in screenshot handler at canvas");
     const uriHere = await this.saveCanvas();
     // console.log(uriHere);
@@ -221,6 +228,7 @@ class CanvasTest extends React.Component {
 
     if (uploadedFile.cancelled) {
       console.log("exiting function bc canceled");
+      this.props.toggleLoading(false);
 
       return "canceled";
     }
@@ -236,12 +244,20 @@ class CanvasTest extends React.Component {
 
     const emailSent = await this.sendEmail(imageInformation);
 
-    // console.log(emailSent);
+    const emptyRequest = await emailSent;
+    console.log(emptyRequest);
 
-    this.setState({ savingScreen: false });
+    this.toggleLoadingFunction(emptyRequest);
   };
 
+  toggleLoadingFunction(emptyRequest) {
+    console.log("in toggle loading function at canvas");
+    this.props.toggleLoading(false);
+    Alert.alert("", "Image Uploaded and Emailed!");
+  }
+
   renderCanvas() {
+    // console.log('render canvas');
     return (
       <ViewShot
         style={{ height: "100%" }}
@@ -593,11 +609,36 @@ class CanvasTest extends React.Component {
     );
   }
 
+  renderModal() {
+    return (
+      <Modal
+        style={{ height: "100%" }}
+        animationType="slide"
+        transparent={true}
+        visible={this.props.loading}
+      >
+        <View
+          style={{
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            top: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "white"
+          }}
+        >
+          <ActivityIndicator animating={true} size="large" color="#0000ff" />
+        </View>
+      </Modal>
+    );
+  }
+
   render() {
     return (
       <View>
+        {this.renderModal()}
         <View style={{ height: "70%" }}>{this.renderCanvas()}</View>
-
         <View
           style={{
             height: "30%",
@@ -612,16 +653,27 @@ class CanvasTest extends React.Component {
   }
 }
 
+const styles = StyleSheet.create({
+  loadingContainer: {
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+    backgroundColor: "red"
+  }
+});
+
 const mapDispatchToProps = dispatch => {
   return bindActionCreators(
-    { changeGarment, getDefaultItems, toggleFrontOrBack },
+    { changeGarment, getDefaultItems, toggleFrontOrBack, toggleLoading },
     dispatch
   );
 };
 
 const mapStateToProps = state => {
   return {
-    items: state.items
+    items: state.items,
+    loading: state.loading
   };
 };
 
