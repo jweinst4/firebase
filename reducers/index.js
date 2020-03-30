@@ -11,11 +11,11 @@ import {
   ADD_ALL_IMAGES
 } from "../actions/user";
 import { TOGGLE_LOADING } from "../actions/loading";
-import { CHANGE_GARMENT } from "../actions/items";
+import { CHANGE_GARMENT, GET_DEFAULT_ITEMS } from "../actions/items";
+import { defaultItems } from "../data/defaultItems";
 
 const initialItemState = {
-  garmentType: "shirt",
-  shirtUrl: "https://i.imgur.com/4seabvo.png",
+  shirtUrl: defaultItems[0].url,
   logo1: "",
   logo2: "",
   logo3: "",
@@ -53,6 +53,8 @@ const user = (state = { images: {} }, action) => {
         updatedState.images = firstImage;
       } else {
         console.log("at least one image");
+        console.log("default items below");
+        console.log(defaultItems);
         updatedState.images["url" + urlKey] = url;
       }
 
@@ -60,15 +62,14 @@ const user = (state = { images: {} }, action) => {
       return updatedState;
     case ADD_ALL_IMAGES:
       // console.log("in add all images in reducer");
-      const newState = { ...state, images: action.payload };
-      return newState;
+      return { ...state, images: action.payload };
     case UPDATE_USER:
       // console.log("in update user at index");
       // console.log(action.payload);
       return action.payload;
     case CLEAR_USER:
       newState = { email: state.email };
-      return newState;
+      return { ...state, email: state.email };
     default:
       return state;
   }
@@ -88,13 +89,14 @@ const items = (state = initialItemState, action) => {
   switch (action.type) {
     case CHANGE_GARMENT:
       console.log("changin garment from index");
-      console.log(state);
-      console.log(action);
-
-      newState = state;
-      newState.garmentType = action.payload;
-      console.log(newState);
-      return newState;
+      return { ...state, shirtUrl: action.payload.url };
+    case GET_DEFAULT_ITEMS:
+      console.log("getting default items at index");
+      return {
+        ...state,
+        shirtUrl: defaultItems[0].url,
+        defaultItems: defaultItems
+      };
     default:
       return state;
   }

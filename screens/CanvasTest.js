@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { changeGarment } from "../actions/items";
+import { changeGarment, getDefaultItems } from "../actions/items";
 import Draggable from "react-native-draggable";
 import ViewShot from "react-native-view-shot";
 import { captureScreen } from "react-native-view-shot";
@@ -13,12 +13,6 @@ import Firebase from "../config/Firebase";
 import * as firebase from "firebase";
 import { sendGridEmail } from "react-native-sendgrid";
 import { MAIL_API_KEY } from "react-native-dotenv";
-
-const testImages = [
-  "https://i.imgur.com/4seabvo.png",
-  "https://i.imgur.com/Bl8wS7j.png",
-  "https://i.imgur.com/SnKMNmu.png"
-];
 
 class CanvasTest extends React.Component {
   constructor(props) {
@@ -33,8 +27,7 @@ class CanvasTest extends React.Component {
       showGarmentDetail: false,
       showAddOnsDetail: false,
       showSaveProjectDetail: false,
-      detailType: "",
-      currentGarment: testImages[0]
+      detailType: ""
     };
   }
 
@@ -49,16 +42,23 @@ class CanvasTest extends React.Component {
     // await Permissions.askAsync(Permissions.REMINDERS);
     // await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
     // await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
-    console.log("key at test below");
-    console.log(API_KEY);
+
+    await this.props.getDefaultItems();
   }
+
+  // getDefaultItems = async () => {
+  //   console.log("getting default items");
+
+  //   console.log(defaultItems);
+
+  // };
 
   saveCanvas = async () => {
     console.log("in save canvas");
 
     return await captureScreen({
       format: "jpg",
-      quality: 0.8
+      quality: 0.9
     });
   };
 
@@ -233,6 +233,8 @@ class CanvasTest extends React.Component {
   };
 
   renderCanvas() {
+    console.log("rendering canvas");
+    console.log(this.props.items.shirtUrl);
     return (
       <ViewShot
         style={{ height: "100%" }}
@@ -241,13 +243,13 @@ class CanvasTest extends React.Component {
       >
         <View
           style={{
-            height: "80%"
+            height: "100%"
           }}
         >
           <Image
             style={{ flex: 1, width: undefined, height: undefined }}
             source={{
-              uri: this.state.currentGarment
+              uri: this.props.items.shirtUrl
             }}
             resizeMode="contain"
           />
@@ -270,7 +272,7 @@ class CanvasTest extends React.Component {
                 style={{ flex: 1, width: undefined, height: undefined }}
                 source={{
                   uri:
-                    "https://firebasestorage.googleapis.com/v0/b/tester-859c6.appspot.com/o/folder1%2F2d8a0e19-c216-4d86-84b9-7ca42d9aa1cd.png?alt=media"
+                    "https://firebasestorage.googleapis.com/v0/b/tester-859c6.appspot.com/o/folder1%2F26bcf8b6-6c2b-46c9-b9c2-de8acc9d545a.jpg?alt=media"
                 }}
                 resizeMode="contain"
               />
@@ -331,7 +333,7 @@ class CanvasTest extends React.Component {
 
   renderGarmentChoice() {
     return (
-      <View
+      <TouchableOpacity
         style={{
           width: "30%",
           marginHorizontal: 5,
@@ -341,22 +343,19 @@ class CanvasTest extends React.Component {
           justifyContent: "center",
           alignItems: "center"
         }}
+        onPress={() => {
+          this.setState({ showDetail: true });
+          this.setState({ detailType: "garment" });
+        }}
       >
-        <Text
-          style={{ textAlign: "center" }}
-          onPress={() => {
-            this.setState({ showDetail: true });
-          }}
-        >
-          Choose Garment
-        </Text>
-      </View>
+        <Text style={{ textAlign: "center" }}>Choose Garment</Text>
+      </TouchableOpacity>
     );
   }
 
   renderAddOns() {
     return (
-      <View
+      <TouchableOpacity
         style={{
           width: "30%",
           marginHorizontal: 5,
@@ -368,13 +367,13 @@ class CanvasTest extends React.Component {
         }}
       >
         <Text style={{ textAlign: "center" }}>Choose Addons</Text>
-      </View>
+      </TouchableOpacity>
     );
   }
 
   renderSaveProject() {
     return (
-      <View
+      <TouchableOpacity
         style={{
           width: "30%",
           marginHorizontal: 5,
@@ -384,9 +383,12 @@ class CanvasTest extends React.Component {
           justifyContent: "center",
           alignItems: "center"
         }}
+        onPress={() => {
+          this.screenshotHandler();
+        }}
       >
         <Text style={{ textAlign: "center" }}>Save Project</Text>
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -406,34 +408,67 @@ class CanvasTest extends React.Component {
     );
   }
 
-  renderDetailOptions() {
+  renderGarmentDetail() {
     return (
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-          height: 200,
-          borderWidth: 1
-        }}
-      >
-        <Text
-          onPress={() => {
-            this.setState({ currentGarment: testImages[1] });
+      <ScrollView horizontal={true}>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: 200,
+            borderWidth: 1
           }}
-          style={{ width: "98%", borderWidth: 1 }}
         >
-          Set State
-        </Text>
-      </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              height: 180,
+              borderWidth: 1
+            }}
+          >
+            {this.props.items.defaultItems.map((item, index) => (
+              <TouchableOpacity
+                style={{
+                  height: 160,
+                  width: 120,
+                  margin: 5,
+                  borderWidth: 1
+                }}
+                key={index}
+                onPress={() => {
+                  this.props.changeGarment(item);
+                  this.setState({ showDetail: false });
+                }}
+              >
+                <Image
+                  style={{ flex: 1, width: undefined, height: undefined }}
+                  source={{
+                    uri: item.url
+                  }}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
     );
+  }
+
+  renderDetailOptions() {
+    console.log("in detail options");
+
+    return this.renderGarmentDetail();
   }
 
   renderToolbar() {
     return (
       <View>
-        <View style={{ width: "100%", height: 200 }}>
+        <View>
           {this.state.showDetail
             ? this.renderDetailOptions()
             : this.renderNonDetailOptions()}
@@ -465,18 +500,16 @@ class CanvasTest extends React.Component {
   render() {
     return (
       <View>
-        <View style={{ height: "90%" }}>{this.renderCanvas()}</View>
+        <View style={{ height: "70%" }}>{this.renderCanvas()}</View>
 
-        <View style={{ position: "absolute", height: "10%", bottom: 0 }}>
-          {this.renderToolbar()}
-        </View>
+        <View style={{ height: "30%" }}>{this.renderToolbar()}</View>
       </View>
     );
   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ changeGarment }, dispatch);
+  return bindActionCreators({ changeGarment, getDefaultItems }, dispatch);
 };
 
 const mapStateToProps = state => {
