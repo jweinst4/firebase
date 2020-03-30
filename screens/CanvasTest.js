@@ -2,10 +2,7 @@ import React from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { changeGarment, getDefaultItems } from "../actions/items";
-import Draggable from "react-native-draggable";
-import ViewShot from "react-native-view-shot";
-import { captureScreen } from "react-native-view-shot";
+
 import * as Permissions from "expo-permissions";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
@@ -13,6 +10,17 @@ import Firebase from "../config/Firebase";
 import * as firebase from "firebase";
 import { sendGridEmail } from "react-native-sendgrid";
 import { MAIL_API_KEY } from "react-native-dotenv";
+
+import { captureScreen } from "react-native-view-shot";
+import Draggable from "react-native-draggable";
+import ViewShot from "react-native-view-shot";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
+import {
+  changeGarment,
+  getDefaultItems,
+  toggleFrontOrBack
+} from "../actions/items";
 
 class CanvasTest extends React.Component {
   constructor(props) {
@@ -178,8 +186,8 @@ class CanvasTest extends React.Component {
 
     const fromEmail = "DesignAShirt@dedteesttest.com";
     const toEmail = "jweinst4@gmail.com";
-    const subject = "You created a new design!";
-    const details = url;
+    const subject = "You created a design!";
+    const details = "<html><body><img src='" + url + "'></body></html>";
 
     const apiKey = MAIL_API_KEY;
 
@@ -188,7 +196,8 @@ class CanvasTest extends React.Component {
       toEmail,
       fromEmail,
       subject,
-      details
+      details,
+      "text/html"
     );
     sendRequest
       .then(response => {
@@ -233,8 +242,6 @@ class CanvasTest extends React.Component {
   };
 
   renderCanvas() {
-    console.log("rendering canvas");
-    console.log(this.props.items.shirtUrl);
     return (
       <ViewShot
         style={{ height: "100%" }}
@@ -243,16 +250,34 @@ class CanvasTest extends React.Component {
       >
         <View
           style={{
-            height: "100%"
+            height: "100%",
+            marginTop: "10%"
           }}
         >
           <Image
             style={{ flex: 1, width: undefined, height: undefined }}
-            source={{
-              uri: this.props.items.shirtUrl
-            }}
+            source={
+              this.props.items.front
+                ? {
+                    uri: this.props.items.shirtUrl
+                  }
+                : {
+                    uri: this.props.items.backShirtUrl
+                  }
+            }
             resizeMode="contain"
           />
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              top: "85%"
+            }}
+            onPress={() => {
+              this.props.toggleFrontOrBack();
+            }}
+          >
+            <Icon name="rotate-3d" size={50} />
+          </TouchableOpacity>
           <Draggable
             onDragRelease={({ nativeEvent }) => {
               // console.log(nativeEvent);
@@ -264,8 +289,7 @@ class CanvasTest extends React.Component {
               style={{
                 width: 100,
                 height: 100,
-                margin: 5,
-                borderWidth: 1
+                margin: 5
               }}
             >
               <Image
@@ -337,8 +361,9 @@ class CanvasTest extends React.Component {
         style={{
           width: "30%",
           marginHorizontal: 5,
-          borderWidth: 1,
-          borderRadius: 5,
+          borderWidth: 2,
+          borderRadius: 1,
+          borderColor: "black",
           height: 100,
           justifyContent: "center",
           alignItems: "center"
@@ -359,8 +384,9 @@ class CanvasTest extends React.Component {
         style={{
           width: "30%",
           marginHorizontal: 5,
-          borderWidth: 1,
-          borderRadius: 5,
+          borderWidth: 2,
+          borderRadius: 1,
+          borderColor: "black",
           height: 100,
           justifyContent: "center",
           alignItems: "center"
@@ -377,8 +403,9 @@ class CanvasTest extends React.Component {
         style={{
           width: "30%",
           marginHorizontal: 5,
-          borderWidth: 1,
-          borderRadius: 5,
+          borderWidth: 2,
+          borderRadius: 1,
+          borderColor: "black",
           height: 100,
           justifyContent: "center",
           alignItems: "center"
@@ -416,8 +443,7 @@ class CanvasTest extends React.Component {
             justifyContent: "center",
             alignItems: "center",
             width: "100%",
-            height: 200,
-            borderWidth: 1
+            height: 200
           }}
         >
           <View
@@ -426,8 +452,7 @@ class CanvasTest extends React.Component {
               justifyContent: "center",
               alignItems: "center",
               width: "100%",
-              height: 180,
-              borderWidth: 1
+              height: 180
             }}
           >
             {this.props.items.defaultItems.map((item, index) => (
@@ -445,11 +470,14 @@ class CanvasTest extends React.Component {
                 }}
               >
                 <Image
-                  style={{ flex: 1, width: undefined, height: undefined }}
+                  style={{ flex: 1, width: 80, height: 60 }}
                   source={{
                     uri: item.url
                   }}
                   resizeMode="contain"
+                  onError={() => {
+                    console.log("error" + index);
+                  }}
                 />
               </TouchableOpacity>
             ))}
@@ -459,10 +487,78 @@ class CanvasTest extends React.Component {
     );
   }
 
+  renderSwatchDetail() {
+    return (
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: 200
+        }}
+      >
+        <TouchableOpacity
+          style={{ height: "10%", width: "100%" }}
+          onPress={() => {
+            this.setState({ showDetail: false });
+          }}
+        >
+          <Text style={{ textAlign: "right", marginRight: 10 }}>X</Text>
+        </TouchableOpacity>
+        <ScrollView>
+          <View style={{ height: "80%" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                flexWrap: "wrap"
+              }}
+            >
+              {this.props.items.defaultItems.map((item, index) => (
+                <TouchableOpacity
+                  style={{
+                    height: 40,
+                    width: 40,
+                    margin: 3
+                  }}
+                  key={index}
+                  onPress={() => {
+                    this.props.changeGarment(item);
+                    // this.setState({ showDetail: false });
+                  }}
+                >
+                  <Image
+                    style={{
+                      flex: 1,
+                      width: undefined,
+                      height: undefined
+                    }}
+                    source={{
+                      uri: item.swatch
+                    }}
+                    resizeMode="cover"
+                    onError={() => {
+                      console.log("error" + index);
+                    }}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+        <TouchableOpacity
+          style={{ height: "10%", width: "100%" }}
+        ></TouchableOpacity>
+      </View>
+    );
+  }
+
   renderDetailOptions() {
     console.log("in detail options");
 
-    return this.renderGarmentDetail();
+    // return this.renderGarmentDetail();
+    return this.renderSwatchDetail();
   }
 
   renderToolbar() {
@@ -502,14 +598,25 @@ class CanvasTest extends React.Component {
       <View>
         <View style={{ height: "70%" }}>{this.renderCanvas()}</View>
 
-        <View style={{ height: "30%" }}>{this.renderToolbar()}</View>
+        <View
+          style={{
+            height: "30%",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          {this.renderToolbar()}
+        </View>
       </View>
     );
   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ changeGarment, getDefaultItems }, dispatch);
+  return bindActionCreators(
+    { changeGarment, getDefaultItems, toggleFrontOrBack },
+    dispatch
+  );
 };
 
 const mapStateToProps = state => {

@@ -11,7 +11,11 @@ import {
   ADD_ALL_IMAGES
 } from "../actions/user";
 import { TOGGLE_LOADING } from "../actions/loading";
-import { CHANGE_GARMENT, GET_DEFAULT_ITEMS } from "../actions/items";
+import {
+  CHANGE_GARMENT,
+  GET_DEFAULT_ITEMS,
+  TOGGLE_FRONT_OR_BACK
+} from "../actions/items";
 import { defaultItems } from "../data/defaultItems";
 
 const initialItemState = {
@@ -21,7 +25,8 @@ const initialItemState = {
   logo3: "",
   text1: "",
   text2: "",
-  text3: ""
+  text3: "",
+  front: true
 };
 
 let newState = {};
@@ -89,13 +94,25 @@ const items = (state = initialItemState, action) => {
   switch (action.type) {
     case CHANGE_GARMENT:
       console.log("changin garment from index");
-      return { ...state, shirtUrl: action.payload.url };
+      return {
+        ...state,
+        shirtUrl: action.payload.url,
+        backShirtUrl: action.payload.backURL
+      };
     case GET_DEFAULT_ITEMS:
       console.log("getting default items at index");
       return {
         ...state,
         shirtUrl: defaultItems[0].url,
+        backShirtUrl: defaultItems[0].backURL,
         defaultItems: defaultItems
+      };
+    case TOGGLE_FRONT_OR_BACK:
+      console.log("toggling front or back at index");
+
+      return {
+        ...state,
+        front: !state.front
       };
     default:
       return state;
