@@ -29,7 +29,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { toggleLoading } from "../actions/loading";
 import { login } from "../actions/user";
 
-let currentVersion = "v2";
+let currentVersion = "v3";
 
 import {
   changeGarment,
@@ -54,16 +54,16 @@ class CanvasTest extends React.Component {
   }
 
   async componentDidMount() {
-    // await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-    // await Permissions.askAsync(Permissions.CALENDAR);
+    await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+    await Permissions.askAsync(Permissions.CALENDAR);
     await Permissions.askAsync(Permissions.CAMERA);
     await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    // await Permissions.askAsync(Permissions.CONTACTS);
-    // await Permissions.askAsync(Permissions.LOCATION);
-    // await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    // await Permissions.askAsync(Permissions.REMINDERS);
-    // await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
-    // await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+    await Permissions.askAsync(Permissions.CONTACTS);
+    await Permissions.askAsync(Permissions.LOCATION);
+    await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    await Permissions.askAsync(Permissions.REMINDERS);
+    await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+    await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
 
     await this.props.getDefaultItems();
     await this.props.login();
@@ -100,7 +100,7 @@ class CanvasTest extends React.Component {
       allowsEditing: true
       // aspect: [4, 3]
     });
-    // console.log(pickerResult);
+    console.log(pickerResult);
 
     return pickerResult;
   };
