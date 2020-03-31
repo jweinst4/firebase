@@ -100,7 +100,7 @@ class ImagePickerComponent extends React.Component {
 
   uploadImageHandler = async () => {
     this.props.toggleLoading(true);
-    console.log("at upload image handler");
+    // console.log("at upload image handler");
 
     const pickImageResult = await this._pickImage();
 
@@ -143,12 +143,12 @@ class ImagePickerComponent extends React.Component {
   };
 
   _pickImage = async () => {
-    console.log("in pick image");
+    // console.log("in pick image");
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true
       // aspect: [4, 3]
     });
-    console.log(pickerResult);
+    // console.log(pickerResult);
 
     return pickerResult;
   };
@@ -262,9 +262,9 @@ class ImagePickerComponent extends React.Component {
   }
 
   _handleImagePicked = async pickerResult => {
-    console.log("in handle Image picked");
+    // console.log("in handle Image picked");
     let file = await uploadImageAsync(pickerResult.uri);
-    console.log(file);
+    // console.log(file);
     return file;
   };
 }

@@ -28,8 +28,9 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { toggleLoading } from "../actions/loading";
 import { login } from "../actions/user";
+import ImagePickerComponent from "../components/ImagePickerComponent";
 
-let currentVersion = "v3";
+let currentVersion = "v4";
 
 import {
   changeGarment,
@@ -49,7 +50,10 @@ class CanvasTest extends React.Component {
       showGarmentDetail: false,
       showAddOnsDetail: false,
       showSaveProjectDetail: false,
-      detailType: ""
+      detailType: "",
+      showLogoUploadDetail: false,
+      showLogoChooseDetail: false,
+      showTextDetail: false
     };
   }
 
@@ -194,6 +198,32 @@ class CanvasTest extends React.Component {
     return [url, urlKey];
   };
 
+  addLogoToUserTable = async calculatedUrlAndUser => {
+    console.log("in add to user table at canvas");
+    // console.log(calculatedUrlAndUser);
+
+    let url = calculatedUrlAndUser[1];
+    let name = calculatedUrlAndUser[0].displayName;
+
+    let imageDatabaseKey = Math.floor(Math.random() * 1000000 + 1);
+    let urlKey = imageDatabaseKey;
+
+    let updatedRoute =
+      "https://tester-859c6.firebaseio.com/users/" + name + "/logos/.json?";
+
+    let response = await fetch(updatedRoute, {
+      method: "PATCH",
+      body: JSON.stringify({
+        ["url" + urlKey]: url
+      }),
+      headers: {
+        "Content-Type": "application/json;charset=utf-8"
+      }
+    });
+
+    return [url, urlKey];
+  };
+
   sendEmail = async imageInformation => {
     console.log("in send email at canvas");
     // console.log(imageInformation);
@@ -265,7 +295,7 @@ class CanvasTest extends React.Component {
     // console.log(uriHere);
     const savedFile = await this.saveUriToFile(uriHere);
     // console.log(savedFile);
-    const uploadedFile = await this.uploadFile(uriHere);
+    const uploadedFile = await this.uploadFile();
     // console.log(uploadedFile);
 
     if (uploadedFile.cancelled) {
@@ -290,13 +320,38 @@ class CanvasTest extends React.Component {
     this.toggleLoadingFunction(emptyRequest);
   };
 
+  uploadLogoHandler = async () => {
+    console.log("in upload logo handler");
+
+    const uploadedFile = await this.uploadFile();
+    // console.log(uploadedFile);
+
+    if (uploadedFile.cancelled) {
+      console.log("exiting function bc canceled");
+      this.props.toggleLoading(false);
+
+      return "canceled";
+    }
+
+    let handleImagePickedResult = await this._handleImagePicked(uploadedFile);
+
+    const calculatedUrlAndUser = await this.getImageUrl(
+      handleImagePickedResult
+    );
+
+    const imageInformation = await this.addLogoToUserTable(
+      calculatedUrlAndUser
+    );
+
+    console.log(imageInformation);
+  };
+
   toggleLoadingFunction(emptyRequest) {
     console.log("in toggle loading function at canvas");
     this.props.toggleLoading(false);
   }
 
   renderCanvas() {
-    // console.log('render canvas');
     return (
       <ViewShot
         style={{ height: "100%" }}
@@ -449,8 +504,12 @@ class CanvasTest extends React.Component {
           justifyContent: "center",
           alignItems: "center"
         }}
+        onPress={() => {
+          this.setState({ showDetail: true });
+          this.setState({ detailType: "addOn" });
+        }}
       >
-        <Text style={{ textAlign: "center" }}>Choose Addons</Text>
+        <Text style={{ textAlign: "center" }}>Choose Logos/Text</Text>
       </TouchableOpacity>
     );
   }
@@ -545,6 +604,126 @@ class CanvasTest extends React.Component {
     );
   }
 
+  uploadLogo() {
+    console.log("in upload logo");
+    return (
+      <View>
+        <TouchableOpacity
+          onPress={() => {
+            console.log("clicked to upload logo");
+          }}
+        >
+          <Text>Upload Logo Here</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  renderAddOnDetail() {
+    return (
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: 200
+          // backgroundColor: "pink"
+        }}
+      >
+        {this.renderUploadLogoModal()}
+        {this.renderChooseLogoModal()}
+        <TouchableOpacity
+          style={{
+            height: "10%",
+            width: "100%"
+            // backgroundColor: "blue"
+          }}
+          onPress={() => {
+            this.setState({ showDetail: false });
+          }}
+        >
+          <Text style={{ textAlign: "right", marginRight: 10 }}>X</Text>
+        </TouchableOpacity>
+
+        <View
+          style={{
+            height: "80%",
+            // backgroundColor: "yellow",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              // backgroundColor: "red",
+              borderWidth: 1,
+              borderRadius: 5,
+              height: "100%"
+            }}
+          >
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: "30%"
+                // backgroundColor: "white"
+              }}
+            >
+              <Text
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  textAlign: "center",
+                  // backgroundColor: "grey",
+                  flex: 1
+                }}
+                onPress={() => {
+                  this.setState({ showLogoUploadDetail: true });
+                }}
+              >
+                Upload Logo
+              </Text>
+            </View>
+            <Text
+              style={{
+                width: "30%",
+                height: "80%",
+                textAlign: "center"
+              }}
+              onPress={() => {
+                this.setState({ showLogoChooseDetail: true });
+              }}
+            >
+              Choose Logo
+            </Text>
+            <Text
+              style={{
+                width: "30%",
+                height: "80%",
+                textAlign: "center"
+              }}
+              onPress={() => {
+                this.setState({ showTextDetail: true });
+              }}
+            >
+              Choose Text
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={{
+            height: "10%",
+            width: "100%"
+            // backgroundColor: "green"
+          }}
+        ></TouchableOpacity>
+      </View>
+    );
+  }
+
   renderSwatchDetail() {
     return (
       <View
@@ -613,10 +792,15 @@ class CanvasTest extends React.Component {
   }
 
   renderDetailOptions() {
-    console.log("in detail options");
+    // console.log("in detail options");
 
     // return this.renderGarmentDetail();
-    return this.renderSwatchDetail();
+
+    if (this.state.detailType === "garment") {
+      return this.renderSwatchDetail();
+    } else if (this.state.detailType === "addOn") {
+      return this.renderAddOnDetail();
+    }
   }
 
   renderToolbar() {
@@ -648,6 +832,116 @@ class CanvasTest extends React.Component {
           </Text>
         </View> */}
       </View>
+    );
+  }
+
+  renderUploadLogoModal() {
+    return (
+      <Modal
+        style={{ height: "100%" }}
+        animationType="slide"
+        transparent={true}
+        visible={this.state.showLogoUploadDetail}
+      >
+        <View
+          style={{
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            top: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "white"
+          }}
+        >
+          <View>
+            <Text>In Show Logo Upload Modal</Text>
+            <Text
+              onPress={() => {
+                this.setState({ showLogoUploadDetail: false });
+              }}
+            >
+              Close
+            </Text>
+            <ImagePickerComponent />
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
+  renderChooseLogoModal() {
+    let allLogos = [];
+    console.log("in render choose logo modal");
+    console.log(this.props.user);
+    if (!this.props.user.images) {
+      console.log("currently no images");
+    } else {
+      console.log("at least one image");
+      allLogos = Object.keys(this.props.user.images);
+      console.log(allLogos);
+      console.log(this.props.user.images);
+    }
+
+    return (
+      <Modal
+        style={{ height: "100%" }}
+        animationType="slide"
+        transparent={true}
+        visible={this.state.showLogoChooseDetail}
+      >
+        <View
+          style={{
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            top: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "white"
+          }}
+        >
+          <View>
+            <Text>In Show Logo Choose Modal</Text>
+            <Text
+              onPress={() => {
+                this.setState({ showLogoChooseDetail: false });
+              }}
+            >
+              Close
+            </Text>
+
+            {!this.props.user.images ? (
+              <View>
+                <Text>No Images</Text>
+              </View>
+            ) : (
+              allLogos.map((item, index) => (
+                <TouchableOpacity
+                  style={{
+                    height: 160,
+                    width: 120,
+                    margin: 5,
+                    borderWidth: 1
+                  }}
+                  key={index}
+                >
+                  <Image
+                    style={{ flex: 1, width: 80, height: 60 }}
+                    source={{
+                      uri: this.props.user.images[item]
+                    }}
+                    resizeMode="contain"
+                    onError={() => {
+                      console.log("error" + index);
+                    }}
+                  />
+                </TouchableOpacity>
+              ))
+            )}
+          </View>
+        </View>
+      </Modal>
     );
   }
 
@@ -715,7 +1009,8 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
     items: state.items,
-    loading: state.loading
+    loading: state.loading,
+    user: state.user
   };
 };
 

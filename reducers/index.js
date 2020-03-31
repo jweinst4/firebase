@@ -45,26 +45,26 @@ const user = (state = { images: {} }, action) => {
       return { ...state, name: action.payload };
     case ADD_IMAGE:
       console.log("in add image in reducer");
+      // console.log(state.images);
 
       const url = action.payload[0];
-      const urlKey = action.payload[1];
+      const urlKey = "url" + action.payload[1];
 
-      let updatedState = state;
+      let newImages = state.images;
 
-      if (updatedState.images === null) {
-        console.log("currently no images");
-        let key = urlKey;
-        let firstImage = { [key]: url };
-        updatedState.images = firstImage;
+      if (!state.images) {
+        console.log("first image");
+        // console.log(newImages);
+        // console.log(urlKey);
+        // console.log(url);
+        let firstImage = { [urlKey]: url };
+        newImages = firstImage;
+        // console.log(newImages);
       } else {
         console.log("at least one image");
-        console.log("default items below");
-        console.log(defaultItems);
-        updatedState.images["url" + urlKey] = url;
+        newImages[urlKey] = url;
       }
-
-      console.log("final state below");
-      return updatedState;
+      return { ...state, images: newImages };
     case ADD_ALL_IMAGES:
       // console.log("in add all images in reducer");
       return { ...state, images: action.payload };
@@ -83,7 +83,7 @@ const user = (state = { images: {} }, action) => {
 const loading = (state = false, action) => {
   switch (action.type) {
     case TOGGLE_LOADING:
-      console.log("toggle loading from index");
+      // console.log("toggle loading from index");
       return action.payload;
     default:
       return state;

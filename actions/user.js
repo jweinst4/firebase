@@ -86,6 +86,33 @@ export const login = () => {
   };
 };
 
+export const getUserLogos = () => {
+  return async (dispatch, getState) => {
+    try {
+      // const { email, password } = getState().user;
+
+      console.log("at get user logos");
+
+      const email = "78@78.com";
+      const password = "Wwwwww";
+
+      const response = await Firebase.auth().signInWithEmailAndPassword(
+        email,
+        password
+      );
+
+      let userData = response.user.providerData[0];
+
+      dispatch(updateUser(userData));
+
+      return userData;
+    } catch (e) {
+      // console.log("failed login at login");
+      alert(e);
+    }
+  };
+};
+
 export const updateProfile = name => {
   console.log("in update profile");
   const userTest = Firebase.auth().currentUser;
