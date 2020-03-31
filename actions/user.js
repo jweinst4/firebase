@@ -60,10 +60,11 @@ export const addAllImages = images => {
 };
 
 export const login = () => {
-  // console.log("at login in user");
   return async (dispatch, getState) => {
     try {
       // const { email, password } = getState().user;
+
+      console.log("at login in user");
 
       const email = "78@78.com";
       const password = "Wwwwww";

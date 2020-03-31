@@ -18,7 +18,7 @@ import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
 import Firebase from "../config/Firebase";
 import * as firebase from "firebase";
-import { sendGridEmail } from "react-native-sendgrid";
+// import { sendGridEmail } from "react-native-sendgrid";
 import { MAIL_API_KEY } from "react-native-dotenv";
 
 import { captureScreen } from "react-native-view-shot";
@@ -27,6 +27,9 @@ import ViewShot from "react-native-view-shot";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { toggleLoading } from "../actions/loading";
+import { login } from "../actions/user";
+
+let currentVersion = "v2";
 
 import {
   changeGarment,
@@ -63,6 +66,7 @@ class CanvasTest extends React.Component {
     // await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
 
     await this.props.getDefaultItems();
+    await this.props.login();
   }
 
   // getDefaultItems = async () => {
@@ -150,6 +154,7 @@ class CanvasTest extends React.Component {
 
   getImageUrl = async fileName => {
     console.log("in get image Url at canvas");
+    // console.log(fileName);
 
     const user = Firebase.auth().currentUser;
 
@@ -196,24 +201,61 @@ class CanvasTest extends React.Component {
     const url = imageInformation[0];
 
     const fromEmail = "DesignAShirt@dedteesttest.com";
-    const toEmail = "jweinst4@gmail.com";
+    const toEmail1 = "eric@dedtees.com";
+    // const toEmail2 = "theLastAlaskn@gmail.com";
+    const ccEmail = "jweinst4@gmail.com";
     const subject = "You created a design!";
     const details = "<html><body><img src='" + url + "'></body></html>";
 
     const apiKey = MAIL_API_KEY;
 
-    const sendRequest = sendGridEmail(
-      apiKey,
-      toEmail,
-      fromEmail,
-      subject,
-      details,
-      "text/html"
-    );
+    const CONFIG = {
+      SENDGRIDURL: "https://api.sendgrid.com/v3/mail/send"
+    };
 
-    const response = await sendRequest;
+    fetch(CONFIG.SENDGRIDURL, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + apiKey
+      },
+      body: JSON.stringify({
+        personalizations: [
+          {
+            to: [
+              {
+                email: toEmail1
+              }
+            ],
+            cc: [
+              {
+                email: ccEmail
+              }
+            ],
+            subject: subject
+          }
+        ],
+        from: {
+          email: fromEmail
+        },
+        content: [
+          {
+            type: "text/html",
+            value: details
+          }
+        ]
+      })
+    })
+      .then(response => {
+        return response;
+      })
+      .catch(error => {
+        this.props.toggleLoading(false);
+        return false;
+      });
 
-    return response;
+    // return response;
   };
 
   screenshotHandler = async () => {
@@ -240,12 +282,10 @@ class CanvasTest extends React.Component {
     );
 
     const imageInformation = await this.addToUserTable(calculatedUrlAndUser);
-    console.log(imageInformation);
 
     const emailSent = await this.sendEmail(imageInformation);
 
     const emptyRequest = await emailSent;
-    console.log(emptyRequest);
 
     this.toggleLoadingFunction(emptyRequest);
   };
@@ -253,7 +293,6 @@ class CanvasTest extends React.Component {
   toggleLoadingFunction(emptyRequest) {
     console.log("in toggle loading function at canvas");
     this.props.toggleLoading(false);
-    Alert.alert("", "Image Uploaded and Emailed!");
   }
 
   renderCanvas() {
@@ -286,7 +325,8 @@ class CanvasTest extends React.Component {
           <TouchableOpacity
             style={{
               position: "absolute",
-              top: "85%"
+              top: "85%",
+              marginLeft: "5%"
             }}
             onPress={() => {
               this.props.toggleFrontOrBack();
@@ -389,7 +429,9 @@ class CanvasTest extends React.Component {
           this.setState({ detailType: "garment" });
         }}
       >
-        <Text style={{ textAlign: "center" }}>Choose Garment</Text>
+        <Text style={{ textAlign: "center" }}>
+          Choose Garment ({currentVersion})
+        </Text>
       </TouchableOpacity>
     );
   }
@@ -665,7 +707,7 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = dispatch => {
   return bindActionCreators(
-    { changeGarment, getDefaultItems, toggleFrontOrBack, toggleLoading },
+    { changeGarment, getDefaultItems, toggleFrontOrBack, toggleLoading, login },
     dispatch
   );
 };
