@@ -22,7 +22,7 @@ import { toggleLoading } from "../actions/loading";
 import { login, addUserLogosToReducer, getLogos } from "../actions/user";
 import ImagePickerComponent from "../components/ImagePickerComponent";
 
-let currentVersion = "v4";
+let currentVersion = "v5";
 
 import { screenShotTest } from "../utilities/screenShotTest";
 

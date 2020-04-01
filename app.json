@@ -3,7 +3,6 @@
     "name": "Expo Firebase Auth",
     "slug": "expofirebaseauth",
     "privacy": "public",
-    "sdkVersion": "33.0.0",
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",

@@ -12,10 +12,6 @@ export const CLEAR_USER = "CLEAR_USER";
 export const ADD_USER_LOGOS_TO_REDUCER = "ADD_USER_LOGOS_TO_REDUCER";
 export const LOGO_TEST = "LOGO_TEST";
 
-import { captureScreen } from "react-native-view-shot";
-
-import * as MediaLibrary from "expo-media-library";
-
 export const updateEmail = email => {
   return {
     type: UPDATE_EMAIL,

@@ -3,7 +3,7 @@
   "expoServerPort": null,
   "packagerPort": null,
   "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerNgrokUrl": "https://uj-mj3.jweinst4.firebase.exp.direct",
+  "packagerNgrokUrl": "https://packager.uj-mj3.jweinst4.firebase.exp.direct",
+  "ngrokPid": 4344
 }
