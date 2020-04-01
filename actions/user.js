@@ -9,6 +9,8 @@ export const ADD_ALL_IMAGES = "ADD_ALL_IMAGES";
 export const LOGIN = "LOGIN";
 export const SIGNUP = "SIGNUP";
 export const CLEAR_USER = "CLEAR_USER";
+export const ADD_USER_LOGOS_TO_REDUCER = "ADD_USER_LOGOS_TO_REDUCER";
+export const LOGO_TEST = "LOGO_TEST";
 
 import { captureScreen } from "react-native-view-shot";
 
@@ -63,12 +65,19 @@ export const addAllImages = images => {
   };
 };
 
+export const addUserLogosToReducer = logos => {
+  return {
+    type: ADD_USER_LOGOS_TO_REDUCER,
+    payload: logos
+  };
+};
+
 export const login = () => {
   return async (dispatch, getState) => {
     try {
       // const { email, password } = getState().user;
 
-      console.log("at login in user");
+      console.log("at login in user.js");
 
       const email = "78@78.com";
       const password = "Wwwwww";
@@ -90,28 +99,27 @@ export const login = () => {
   };
 };
 
-export const getUserLogos = () => {
+export const getLogos = () => {
   return async (dispatch, getState) => {
     try {
-      // const { email, password } = getState().user;
+      console.log("at get logos in user.js");
 
-      console.log("at get user logos");
-
-      const email = "78@78.com";
-      const password = "Wwwwww";
-
-      const response = await Firebase.auth().signInWithEmailAndPassword(
-        email,
-        password
+      const response = await fetch(
+        "https://tester-859c6.firebaseio.com/users/78/images/.json?",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json;charset=utf-8"
+          }
+        }
       );
 
-      let userData = response.user.providerData[0];
+      let result = await response.json();
+      dispatch(addUserLogosToReducer(result));
 
-      dispatch(updateUser(userData));
-
-      return userData;
+      return result;
     } catch (e) {
-      // console.log("failed login at login");
+      console.log("failed getting logos");
       alert(e);
     }
   };

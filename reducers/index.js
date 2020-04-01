@@ -9,7 +9,7 @@ import {
   UPDATE_NAME,
   ADD_IMAGE,
   ADD_ALL_IMAGES,
-  SCREEN_SHOT_HANDLER_FUNCTION
+  ADD_USER_LOGOS_TO_REDUCER
 } from "../actions/user";
 import { TOGGLE_LOADING } from "../actions/loading";
 import {
@@ -76,10 +76,9 @@ const user = (state = { images: {} }, action) => {
     case CLEAR_USER:
       newState = { email: state.email };
       return { ...state, email: state.email };
-    case SCREEN_SHOT_HANDLER_FUNCTION:
-      console.log("screen shot handler at reducer");
-
-      return state;
+    case ADD_USER_LOGOS_TO_REDUCER:
+      let newLogos = action.payload;
+      return { ...state, logos: newLogos };
     default:
       return state;
   }

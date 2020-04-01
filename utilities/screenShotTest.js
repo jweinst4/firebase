@@ -1,19 +1,3 @@
-import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Modal,
-  Alert
-} from "react-native";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-
-import * as Permissions from "expo-permissions";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
 import Firebase from "../config/Firebase";
@@ -22,9 +6,6 @@ import * as firebase from "firebase";
 import { MAIL_API_KEY } from "react-native-dotenv";
 
 import { captureScreen } from "react-native-view-shot";
-import Draggable from "react-native-draggable";
-import ViewShot from "react-native-view-shot";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 saveCanvas = async () => {
   console.log("in save canvas at ss test");
@@ -392,5 +373,5 @@ export const screenShotTest = async () => {
 
   const emailSent = await this.sendEmail(imageInformation);
 
-  // const emptyRequest = await emailSent;
+  return emailSent;
 };
