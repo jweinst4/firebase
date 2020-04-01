@@ -32,13 +32,15 @@ import ImagePickerComponent from "../components/ImagePickerComponent";
 
 let currentVersion = "v4";
 
+import { screenShotTest } from "../utilities/screenShotTest";
+
 import {
   changeGarment,
   getDefaultItems,
   toggleFrontOrBack
 } from "../actions/items";
 
-class CanvasTest extends React.Component {
+class Canvas extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -231,9 +233,9 @@ class CanvasTest extends React.Component {
     const url = imageInformation[0];
 
     const fromEmail = "DesignAShirt@dedteesttest.com";
-    const toEmail1 = "eric@dedtees.com";
+    const toEmail1 = "jweinst4@gmail.com";
     // const toEmail2 = "theLastAlaskn@gmail.com";
-    const ccEmail = "jweinst4@gmail.com";
+    // const ccEmail = "jweinst4@gmail.com";
     const subject = "You created a design!";
     const details = "<html><body><img src='" + url + "'></body></html>";
 
@@ -256,11 +258,6 @@ class CanvasTest extends React.Component {
             to: [
               {
                 email: toEmail1
-              }
-            ],
-            cc: [
-              {
-                email: ccEmail
               }
             ],
             subject: subject
@@ -290,32 +287,35 @@ class CanvasTest extends React.Component {
 
   screenshotHandler = async () => {
     this.props.toggleLoading(true);
+
+    let responseTest = await screenShotTest();
     // console.log("in screenshot handler at canvas");
-    const uriHere = await this.saveCanvas();
-    // console.log(uriHere);
-    const savedFile = await this.saveUriToFile(uriHere);
-    // console.log(savedFile);
-    const uploadedFile = await this.uploadFile();
-    // console.log(uploadedFile);
+    // const uriHere = await this.saveCanvas();
+    // // console.log(uriHere);
+    // const savedFile = await this.saveUriToFile(uriHere);
+    // // console.log(savedFile);
+    // const uploadedFile = await this.uploadFile();
+    // // console.log(uploadedFile);
 
-    if (uploadedFile.cancelled) {
-      console.log("exiting function bc canceled");
-      this.props.toggleLoading(false);
+    // if (uploadedFile.cancelled) {
+    //   console.log("exiting function bc canceled");
+    //   this.props.toggleLoading(false);
 
-      return "canceled";
-    }
+    //   return "canceled";
+    // }
 
-    let handleImagePickedResult = await this._handleImagePicked(uploadedFile);
+    // let handleImagePickedResult = await this._handleImagePicked(uploadedFile);
 
-    const calculatedUrlAndUser = await this.getImageUrl(
-      handleImagePickedResult
-    );
+    // const calculatedUrlAndUser = await this.getImageUrl(
+    //   handleImagePickedResult
+    // );
 
-    const imageInformation = await this.addToUserTable(calculatedUrlAndUser);
+    // const imageInformation = await this.addToUserTable(calculatedUrlAndUser);
 
-    const emailSent = await this.sendEmail(imageInformation);
+    // const emailSent = await this.sendEmail(imageInformation);
 
-    const emptyRequest = await emailSent;
+    // const emptyRequest = await emailSent;
+    const emptyRequest = await responseTest;
 
     this.toggleLoadingFunction(emptyRequest);
   };
@@ -604,21 +604,6 @@ class CanvasTest extends React.Component {
     );
   }
 
-  uploadLogo() {
-    console.log("in upload logo");
-    return (
-      <View>
-        <TouchableOpacity
-          onPress={() => {
-            console.log("clicked to upload logo");
-          }}
-        >
-          <Text>Upload Logo Here</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   renderAddOnDetail() {
     return (
       <View
@@ -872,15 +857,15 @@ class CanvasTest extends React.Component {
 
   renderChooseLogoModal() {
     let allLogos = [];
-    console.log("in render choose logo modal");
-    console.log(this.props.user);
+    // console.log("in render choose logo modal");
+    // console.log(this.props.user);
     if (!this.props.user.images) {
-      console.log("currently no images");
+      // console.log("currently no images");
     } else {
-      console.log("at least one image");
+      // console.log("at least one image");
       allLogos = Object.keys(this.props.user.images);
-      console.log(allLogos);
-      console.log(this.props.user.images);
+      // console.log(allLogos);
+      // console.log(this.props.user.images);
     }
 
     return (
@@ -1001,7 +986,13 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = dispatch => {
   return bindActionCreators(
-    { changeGarment, getDefaultItems, toggleFrontOrBack, toggleLoading, login },
+    {
+      changeGarment,
+      getDefaultItems,
+      toggleFrontOrBack,
+      toggleLoading,
+      login
+    },
     dispatch
   );
 };
@@ -1017,4 +1008,4 @@ const mapStateToProps = state => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(CanvasTest);
+)(Canvas);

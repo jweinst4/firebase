@@ -3,8 +3,7 @@ import { createSwitchNavigator, createAppContainer } from "react-navigation";
 import Login from "../screens/Login";
 import Signup from "../screens/Signup";
 import Profile from "../screens/Profile";
-import CanvasTest from "../screens/CanvasTest";
-import CanvasBackup from "../screens/CanvasBackup";
+import Canvas from "../screens/Canvas";
 
 const SwitchNavigator = createSwitchNavigator(
   {
@@ -17,15 +16,12 @@ const SwitchNavigator = createSwitchNavigator(
     Profile: {
       screen: Profile
     },
-    CanvasTest: {
-      screen: CanvasTest
-    },
-    CanvasBackup: {
-      screen: CanvasBackup
+    Canvas: {
+      screen: Canvas
     }
   },
   {
-    initialRouteName: "CanvasTest"
+    initialRouteName: "Canvas"
   }
 );
 

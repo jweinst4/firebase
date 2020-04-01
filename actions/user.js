@@ -10,6 +10,10 @@ export const LOGIN = "LOGIN";
 export const SIGNUP = "SIGNUP";
 export const CLEAR_USER = "CLEAR_USER";
 
+import { captureScreen } from "react-native-view-shot";
+
+import * as MediaLibrary from "expo-media-library";
+
 export const updateEmail = email => {
   return {
     type: UPDATE_EMAIL,
