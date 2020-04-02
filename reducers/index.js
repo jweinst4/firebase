@@ -16,7 +16,8 @@ import {
   CHANGE_GARMENT,
   GET_DEFAULT_ITEMS,
   TOGGLE_FRONT_OR_BACK,
-  CHOOSE_LOGO
+  CHOOSE_LOGO,
+  CHANGE_LOGO_DIMENSIONS
 } from "../actions/items";
 import { defaultItems } from "../data/defaultItems";
 
@@ -219,6 +220,31 @@ const items = (state = initialItemState, action) => {
       }
 
       return { ...state, logos: newLogos };
+    case CHANGE_LOGO_DIMENSIONS:
+      console.log("changing logo dimensions at index.js/reducer");
+      console.log(action);
+      console.log(state.logos);
+
+      let scalar = 0;
+
+      if (action.payload.type === "inc") {
+        scalar = 1.1;
+      } else {
+        scalar = 1 / 1.1;
+      }
+
+      let newLogoDimensions = state.logos;
+      let currentKeyDimensions = "logo" + action.payload.logoId;
+
+      newLogoDimensions[currentKeyDimensions].widthDefault =
+        newLogoDimensions[currentKeyDimensions].widthDefault * scalar;
+
+      newLogoDimensions[currentKeyDimensions].heightDefault =
+        newLogoDimensions[currentKeyDimensions].heightDefault * scalar;
+
+      console.log(newLogoDimensions);
+
+      return { ...state, logos: newLogoDimensions };
 
     default:
       return state;

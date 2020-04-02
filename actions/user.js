@@ -73,7 +73,7 @@ export const login = () => {
     try {
       // const { email, password } = getState().user;
 
-      console.log("at login in user.js");
+      // console.log("at login in user.js");
 
       const email = "78@78.com";
       const password = "Wwwwww";

@@ -32,7 +32,8 @@ import {
   changeGarment,
   getDefaultItems,
   toggleFrontOrBack,
-  chooseLogo
+  chooseLogo,
+  changeLogoDimensions
 } from "../actions/items";
 
 class Canvas extends React.Component {
@@ -127,6 +128,7 @@ class Canvas extends React.Component {
             <Icon name="rotate-3d" size={50} />
           </TouchableOpacity>
           {this.renderLogos()}
+          {this.renderLogosToolbar()}
         </View>
       </ViewShot>
     );
@@ -527,7 +529,7 @@ class Canvas extends React.Component {
       userLogos[currentKey] === "" ? null : (
         <Draggable
           onDragRelease={({ nativeEvent }) => {
-            console.log(nativeEvent);
+            // console.log(nativeEvent);
           }}
           x={200}
           y={200}
@@ -535,8 +537,8 @@ class Canvas extends React.Component {
         >
           <View
             style={{
-              width: 150,
-              height: 150,
+              width: userLogos[currentKey]["widthDefault"],
+              height: userLogos[currentKey]["heightDefault"],
               margin: 5
             }}
           >
@@ -550,6 +552,60 @@ class Canvas extends React.Component {
           </View>
         </Draggable>
       )
+    );
+  }
+
+  renderLogosToolbar() {
+    const userLogos = this.props.items.logos;
+    const logoKeys = Object.keys(userLogos);
+    // console.log(userLogos);
+    // console.log(logoKeys);
+
+    return (
+      <View
+        style={{
+          position: "absolute",
+          top: 190,
+          right: 20,
+          width: 70
+        }}
+      >
+        <View>
+          {logoKeys.map((currentKey, index) =>
+            userLogos[currentKey] === "" ? null : (
+              <View>
+                <Text>Logo {index}</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <View style={{ width: "50%" }}>
+                    <Text
+                      onPress={() => {
+                        this.props.changeLogoDimensions({
+                          logoId: index + 1,
+                          type: "inc"
+                        });
+                      }}
+                    >
+                      Inc
+                    </Text>
+                  </View>
+                  <View style={{ width: "50%" }}>
+                    <Text
+                      onPress={() => {
+                        this.props.changeLogoDimensions({
+                          logoId: index + 1,
+                          type: "dec"
+                        });
+                      }}
+                    >
+                      Dec
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )
+          )}
+        </View>
+      </View>
     );
   }
 
@@ -670,6 +726,7 @@ class Canvas extends React.Component {
       <View>
         {this.renderModal()}
         <View style={{ height: "70%" }}>{this.renderCanvas()}</View>
+
         <View
           style={{
             height: "30%",
@@ -704,7 +761,8 @@ const mapDispatchToProps = dispatch => {
       login,
       addUserLogosToReducer,
       getLogos,
-      chooseLogo
+      chooseLogo,
+      changeLogoDimensions
     },
     dispatch
   );
