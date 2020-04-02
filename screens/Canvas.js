@@ -127,8 +127,12 @@ class Canvas extends React.Component {
           >
             <Icon name="rotate-3d" size={50} />
           </TouchableOpacity>
-          {this.renderLogos()}
-          {this.renderLogosToolbar()}
+          {this.props.items.front
+            ? this.renderLogosFront()
+            : this.renderLogosBack()}
+          {this.props.items.front
+            ? this.renderLogosToolbarFront()
+            : this.renderLogosToolbarBack()}
         </View>
       </ViewShot>
     );
@@ -518,13 +522,13 @@ class Canvas extends React.Component {
     );
   }
 
-  renderLogos() {
-    // console.log("in render logos");
-    // console.log(this.props.items);
-    const userLogos = this.props.items.logos;
+  renderLogosFront() {
+    console.log("in render logos front");
+    console.log(this.props.items);
+
+    const userLogos = this.props.items.logos.front;
     const logoKeys = Object.keys(userLogos);
-    // console.log(userLogos);
-    // console.log(logoKeys);
+
     return logoKeys.map((currentKey, index) =>
       userLogos[currentKey] === "" ? null : (
         <Draggable
@@ -533,7 +537,7 @@ class Canvas extends React.Component {
           }}
           x={200}
           y={200}
-          key={currentKey}
+          key={"front" + currentKey}
         >
           <View
             style={{
@@ -555,11 +559,98 @@ class Canvas extends React.Component {
     );
   }
 
-  renderLogosToolbar() {
-    const userLogos = this.props.items.logos;
+  renderLogosBack() {
+    // console.log("in render logos front");
+    // console.log(this.props.items);
+
+    const userLogos = this.props.items.logos.back;
     const logoKeys = Object.keys(userLogos);
-    // console.log(userLogos);
-    // console.log(logoKeys);
+
+    return logoKeys.map((currentKey, index) =>
+      userLogos[currentKey] === "" ? null : (
+        <Draggable
+          onDragRelease={({ nativeEvent }) => {
+            // console.log(nativeEvent);
+          }}
+          x={200}
+          y={200}
+          key={"back" + currentKey}
+        >
+          <View
+            style={{
+              width: userLogos[currentKey]["widthDefault"],
+              height: userLogos[currentKey]["heightDefault"],
+              margin: 5
+            }}
+          >
+            <Image
+              style={{ flex: 1, width: undefined, height: undefined }}
+              source={{
+                uri: userLogos[currentKey]["url"]
+              }}
+              resizeMode="contain"
+            />
+          </View>
+        </Draggable>
+      )
+    );
+  }
+
+  renderLogosToolbarFront() {
+    const userLogos = this.props.items.logos.front;
+    const logoKeys = Object.keys(userLogos);
+
+    return (
+      <View
+        style={{
+          position: "absolute",
+          top: 190,
+          right: 20,
+          width: 70
+        }}
+      >
+        <View>
+          {logoKeys.map((currentKey, index) =>
+            userLogos[currentKey] === "" ? null : (
+              <View>
+                <Text>Logo {index}</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <View style={{ width: "50%" }}>
+                    <Text
+                      onPress={() => {
+                        this.props.changeLogoDimensions({
+                          logoId: index + 1,
+                          type: "inc"
+                        });
+                      }}
+                    >
+                      Inc
+                    </Text>
+                  </View>
+                  <View style={{ width: "50%" }}>
+                    <Text
+                      onPress={() => {
+                        this.props.changeLogoDimensions({
+                          logoId: index + 1,
+                          type: "dec"
+                        });
+                      }}
+                    >
+                      Dec
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )
+          )}
+        </View>
+      </View>
+    );
+  }
+
+  renderLogosToolbarBack() {
+    const userLogos = this.props.items.logos.back;
+    const logoKeys = Object.keys(userLogos);
 
     return (
       <View

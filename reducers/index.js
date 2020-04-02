@@ -32,21 +32,37 @@ let imageHeight = 0;
 const initialItemState = {
   shirtUrl: defaultItems[0].url,
   text: {
-    text1: "",
-    text2: "",
-    text3: "",
-    text4: "",
-    text5: "",
-    text6: ""
+    text1Front: "",
+    text2Front: "",
+    text3Front: "",
+    text4Front: "",
+    text5Front: "",
+    text6Front: "",
+    text1Back: "",
+    text2Back: "",
+    text3Back: "",
+    text4Back: "",
+    text5Back: "",
+    text6Back: ""
   },
   front: true,
   logos: {
-    logo1: "",
-    logo2: "",
-    logo3: "",
-    logo4: "",
-    logo5: "",
-    logo6: ""
+    front: {
+      logo1: "",
+      logo2: "",
+      logo3: "",
+      logo4: "",
+      logo5: "",
+      logo6: ""
+    },
+    back: {
+      logo1: "",
+      logo2: "",
+      logo3: "",
+      logo4: "",
+      logo5: "",
+      logo6: ""
+    }
   }
 };
 
@@ -192,31 +208,54 @@ const items = (state = initialItemState, action) => {
       // console.log(state);
       console.log(action);
 
-      let currentLogo = action.payload[0];
-
       let newLogos = state.logos;
 
-      if (!state.logos.logo1) {
-        console.log("first logo");
-        newLogos.logo1 = action.payload[0];
-        console.log(newLogos);
-      } else if (!state.logos.logo2) {
-        console.log("second logo");
-        newLogos.logo2 = action.payload[0];
-      } else if (!state.logos.logo3) {
-        // console.log("second logo");
-        newLogos.logo3 = action.payload[0];
-      } else if (!state.logos.logo4) {
-        // console.log("second logo");
-        newLogos.logo4 = action.payload[0];
-      } else if (!state.logos.logo5) {
-        // console.log("second logo");
-        newLogos.logo5 = action.payload[0];
-      } else if (!state.logos.logo6) {
-        // console.log("second logo");
-        newLogos.logo6 = action.payload[0];
+      if (state.front) {
+        if (!state.logos.front.logo1) {
+          console.log("first logo front");
+          newLogos.front.logo1 = action.payload[0];
+          console.log(newLogos);
+        } else if (!state.logos.front.logo2) {
+          console.log("second logo front");
+          newLogos.front.logo2 = action.payload[0];
+        } else if (!state.logos.front.logo3) {
+          // console.log("second logo");
+          newLogos.front.logo3 = action.payload[0];
+        } else if (!state.logos.front.logo4) {
+          // console.log("second logo");
+          newLogos.front.logo4 = action.payload[0];
+        } else if (!state.logos.front.logo5) {
+          // console.log("second logo");
+          newLogos.front.logo5 = action.payload[0];
+        } else if (!state.logos.front.logo6) {
+          // console.log("second logo");
+          newLogos.front.logo6 = action.payload[0];
+        } else {
+          console.log("no logos front");
+        }
       } else {
-        console.log("no logos");
+        if (!state.logos.back.logo1) {
+          console.log("first logo back");
+          newLogos.back.logo1 = action.payload[0];
+          console.log(newLogos);
+        } else if (!state.logos.back.logo2) {
+          console.log("second logo back");
+          newLogos.back.logo2 = action.payload[0];
+        } else if (!state.logos.back.logo3) {
+          // console.log("second logo");
+          newLogos.back.logo3 = action.payload[0];
+        } else if (!state.logos.back.logo4) {
+          // console.log("second logo");
+          newLogos.back.logo4 = action.payload[0];
+        } else if (!state.logos.back.logo5) {
+          // console.log("second logo");
+          newLogos.back.logo5 = action.payload[0];
+        } else if (!state.logos.back.logo6) {
+          // console.log("second logo");
+          newLogos.back.logo6 = action.payload[0];
+        } else {
+          console.log("no logos back");
+        }
       }
 
       return { ...state, logos: newLogos };
@@ -234,13 +273,23 @@ const items = (state = initialItemState, action) => {
       }
 
       let newLogoDimensions = state.logos;
+      currentKeyDimensions = "logo" + action.payload.logoId;
+
+      if (state.front) {
+        newLogoDimensions.front[currentKeyDimensions].widthDefault =
+          newLogoDimensions.front[currentKeyDimensions].widthDefault * scalar;
+
+        newLogoDimensions.front[currentKeyDimensions].heightDefault =
+          newLogoDimensions.front[currentKeyDimensions].heightDefault * scalar;
+      } else {
+        newLogoDimensions.back[currentKeyDimensions].widthDefault =
+          newLogoDimensions.back[currentKeyDimensions].widthDefault * scalar;
+
+        newLogoDimensions.back[currentKeyDimensions].heightDefault =
+          newLogoDimensions.back[currentKeyDimensions].heightDefault * scalar;
+      }
+
       let currentKeyDimensions = "logo" + action.payload.logoId;
-
-      newLogoDimensions[currentKeyDimensions].widthDefault =
-        newLogoDimensions[currentKeyDimensions].widthDefault * scalar;
-
-      newLogoDimensions[currentKeyDimensions].heightDefault =
-        newLogoDimensions[currentKeyDimensions].heightDefault * scalar;
 
       console.log(newLogoDimensions);
 
