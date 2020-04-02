@@ -101,7 +101,7 @@ export const getLogos = () => {
       console.log("at get logos in user.js");
 
       const response = await fetch(
-        "https://tester-859c6.firebaseio.com/users/78/images/.json?",
+        "https://tester-859c6.firebaseio.com/users/78/logos/.json?",
         {
           method: "GET",
           headers: {

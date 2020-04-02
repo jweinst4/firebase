@@ -18,6 +18,9 @@ import * as Permissions from "expo-permissions";
 import Firebase from "../config/Firebase";
 import * as firebase from "firebase";
 
+let imageHeight = 0;
+let imageWidth = 0;
+
 class ImagePickerComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -103,6 +106,10 @@ class ImagePickerComponent extends React.Component {
     // console.log("at upload image handler");
 
     const pickImageResult = await this._pickImage();
+    // console.log(pickImageResult);
+
+    imageWidth = pickImageResult.width;
+    imageHeight = pickImageResult.height;
 
     if (pickImageResult.cancelled) {
       console.log("exiting function bc canceled");
@@ -120,8 +127,11 @@ class ImagePickerComponent extends React.Component {
     const calculatedUrlAndUser = await this.getImageUrl(
       handleImagePickedResult
     );
+    // console.log(calculatedUrlAndUser);
 
     const imageInformation = await this.addToUserTable(calculatedUrlAndUser);
+
+    // console.log(imageInformation);
 
     this.props.addImage(imageInformation);
 
@@ -186,23 +196,29 @@ class ImagePickerComponent extends React.Component {
     let url = calculatedUrlAndUser[1];
     let name = calculatedUrlAndUser[0].displayName;
 
-    let imageDatabaseKey = Math.floor(Math.random() * 1000000 + 1);
-    let urlKey = imageDatabaseKey;
+    let logoDatabaseKey = Math.floor(Math.random() * 1000000 + 1);
+    let urlKey = logoDatabaseKey;
 
     let updatedRoute =
-      "https://tester-859c6.firebaseio.com/users/" + name + "/images/.json?";
+      "https://tester-859c6.firebaseio.com/users/" +
+      name +
+      "/logos/" +
+      urlKey +
+      "/.json?";
 
     let response = await fetch(updatedRoute, {
       method: "PATCH",
       body: JSON.stringify({
-        ["url" + urlKey]: url
+        url: url,
+        width: imageWidth,
+        height: imageHeight
       }),
       headers: {
         "Content-Type": "application/json;charset=utf-8"
       }
     });
 
-    return [url, urlKey];
+    return [url, imageWidth, imageHeight, urlKey];
   };
 
   getImageUrl = async fileName => {

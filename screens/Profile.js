@@ -46,7 +46,7 @@ class Profile extends React.Component {
     let response = await fetch(
       "https://tester-859c6.firebaseio.com/users/" +
         userDisplayName +
-        "/images/.json?",
+        "/logos/.json?",
       {
         method: "GET",
         headers: {

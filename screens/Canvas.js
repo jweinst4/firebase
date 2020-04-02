@@ -22,6 +22,8 @@ import { toggleLoading } from "../actions/loading";
 import { login, addUserLogosToReducer, getLogos } from "../actions/user";
 import ImagePickerComponent from "../components/ImagePickerComponent";
 
+import { defaultItems } from "../data/defaultItems";
+
 let currentVersion = "v5";
 
 import { screenShotTest } from "../utilities/screenShotTest";
@@ -29,7 +31,8 @@ import { screenShotTest } from "../utilities/screenShotTest";
 import {
   changeGarment,
   getDefaultItems,
-  toggleFrontOrBack
+  toggleFrontOrBack,
+  chooseLogo
 } from "../actions/items";
 
 class Canvas extends React.Component {
@@ -47,7 +50,9 @@ class Canvas extends React.Component {
       detailType: "",
       showLogoUploadDetail: false,
       showLogoChooseDetail: false,
-      showTextDetail: false
+      showTextDetail: false,
+      defaultItems: {},
+      loadingCanvasComponent: true
     };
   }
 
@@ -63,9 +68,11 @@ class Canvas extends React.Component {
     // await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
     // await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
 
-    await this.props.getDefaultItems();
+    this.setState({ defaultItems: defaultItems });
+
     await this.props.login();
     await this.props.getLogos();
+    this.setState({ loading: false });
   }
 
   screenshotHandler = async () => {
@@ -81,6 +88,7 @@ class Canvas extends React.Component {
   }
 
   renderCanvas() {
+    // console.log("at render canvas");
     return (
       <ViewShot
         style={{ height: "100%" }}
@@ -118,35 +126,7 @@ class Canvas extends React.Component {
           >
             <Icon name="rotate-3d" size={50} />
           </TouchableOpacity>
-          <Draggable
-            onDragRelease={({ nativeEvent }) => {
-              // console.log(nativeEvent);
-            }}
-            x={200}
-            y={200}
-          >
-            <View
-              style={{
-                width: 100,
-                height: 100,
-                margin: 5
-              }}
-            >
-              <Image
-                style={{ flex: 1, width: undefined, height: undefined }}
-                source={{
-                  uri:
-                    "https://firebasestorage.googleapis.com/v0/b/tester-859c6.appspot.com/o/folder1%2F26bcf8b6-6c2b-46c9-b9c2-de8acc9d545a.jpg?alt=media"
-                }}
-                resizeMode="contain"
-              />
-            </View>
-          </Draggable>
-          <Draggable x={100} y={100}>
-            <View>
-              <Text>Tester</Text>
-            </View>
-          </Draggable>
+          {this.renderLogos()}
         </View>
       </ViewShot>
     );
@@ -226,14 +206,29 @@ class Canvas extends React.Component {
     return (
       <View
         style={{
-          flexDirection: "row",
           justifyContent: "center",
-          alignItems: "center"
+          alignItems: "center",
+          width: "100%",
+          height: 200
         }}
       >
-        {this.renderGarmentChoice()}
-        {this.renderAddOns()}
-        {this.renderSaveProject()}
+        <TouchableOpacity style={{ height: "10%", width: "100%" }}>
+          <Text style={{ textAlign: "right", marginRight: 10 }}></Text>
+        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          {this.renderGarmentChoice()}
+          {this.renderAddOns()}
+          {this.renderSaveProject()}
+        </View>
+        <TouchableOpacity
+          style={{ height: "10%", width: "100%" }}
+        ></TouchableOpacity>
       </View>
     );
   }
@@ -423,7 +418,7 @@ class Canvas extends React.Component {
                 flexWrap: "wrap"
               }}
             >
-              {this.props.items.defaultItems.map((item, index) => (
+              {this.state.defaultItems.map((item, index) => (
                 <TouchableOpacity
                   style={{
                     height: 40,
@@ -521,15 +516,55 @@ class Canvas extends React.Component {
     );
   }
 
+  renderLogos() {
+    // console.log("in render logos");
+    // console.log(this.props.items);
+    const userLogos = this.props.items.logos;
+    const logoKeys = Object.keys(userLogos);
+    // console.log(userLogos);
+    // console.log(logoKeys);
+    return logoKeys.map((currentKey, index) =>
+      userLogos[currentKey] === "" ? null : (
+        <Draggable
+          onDragRelease={({ nativeEvent }) => {
+            console.log(nativeEvent);
+          }}
+          x={200}
+          y={200}
+          key={currentKey}
+        >
+          <View
+            style={{
+              width: 150,
+              height: 150,
+              margin: 5
+            }}
+          >
+            <Image
+              style={{ flex: 1, width: undefined, height: undefined }}
+              source={{
+                uri: userLogos[currentKey]["url"]
+              }}
+              resizeMode="contain"
+            />
+          </View>
+        </Draggable>
+      )
+    );
+  }
+
   renderChooseLogoModal() {
     let allLogos = [];
+    // console.log("in render choose logo modal");
+
     if (!this.props.user.logos) {
-      // console.log("currently no images");
+      // console.log("currently no logos at choose logo modal");
     } else {
-      // console.log("at least one image");
+      console.log("at least one logo at choose logo modal");
+      // console.log(this.props.user.logos);
+
       allLogos = Object.keys(this.props.user.logos);
       // console.log(allLogos);
-      // console.log(this.props.user.images);
     }
 
     return (
@@ -560,33 +595,44 @@ class Canvas extends React.Component {
               Close
             </Text>
 
-            {!this.props.user.logos ? (
+            {!allLogos ? (
               <View>
-                <Text>No Images</Text>
+                <Text>No Logos</Text>
               </View>
             ) : (
-              allLogos.map((item, index) => (
-                <TouchableOpacity
-                  style={{
-                    height: 160,
-                    width: 120,
-                    margin: 5,
-                    borderWidth: 1
-                  }}
-                  key={index}
-                >
-                  <Image
-                    style={{ flex: 1, width: 80, height: 60 }}
-                    source={{
-                      uri: this.props.user.logos[item]
-                    }}
-                    resizeMode="contain"
-                    onError={() => {
-                      console.log("error" + index);
-                    }}
-                  />
-                </TouchableOpacity>
-              ))
+              <ScrollView>
+                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                  {allLogos.map((item, index) => (
+                    <TouchableOpacity
+                      style={{
+                        height: this.props.user.logos[item].heightDefault,
+                        width: this.props.user.logos[item].widthDefault,
+                        margin: 5,
+                        borderWidth: 1
+                      }}
+                      key={index}
+                      onPress={() => {
+                        this.props.chooseLogo([
+                          this.props.user.logos[item],
+                          item
+                        ]);
+                        this.setState({ showLogoChooseDetail: false });
+                      }}
+                    >
+                      <Image
+                        style={{ flex: 1, width: undefined, height: undefined }}
+                        source={{
+                          uri: this.props.user.logos[item].url
+                        }}
+                        resizeMode="contain"
+                        onError={() => {
+                          console.log("error" + index);
+                        }}
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
             )}
           </View>
         </View>
@@ -657,7 +703,8 @@ const mapDispatchToProps = dispatch => {
       toggleLoading,
       login,
       addUserLogosToReducer,
-      getLogos
+      getLogos,
+      chooseLogo
     },
     dispatch
   );

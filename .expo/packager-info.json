@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 10444,
   "expoServerNgrokUrl": "https://uj-mj3.jweinst4.firebase.exp.direct",
   "packagerNgrokUrl": "https://packager.uj-mj3.jweinst4.firebase.exp.direct",
-  "ngrokPid": 4344
+  "ngrokPid": 10455
 }
