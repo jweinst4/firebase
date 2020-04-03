@@ -1,9 +1,9 @@
 {
-  "devToolsPort": 19002,
+  "devToolsPort": 19003,
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 35793,
+  "packagerPid": 40003,
   "expoServerNgrokUrl": "https://vq-asq.jweinst4.firebase.exp.direct",
   "packagerNgrokUrl": "https://packager.vq-asq.jweinst4.firebase.exp.direct",
-  "ngrokPid": 35804
+  "ngrokPid": 40024
 }

@@ -65,7 +65,9 @@ class Canvas extends React.Component {
         height: 0,
         heightDefault: 0,
         width: 0,
-        widthDefault: 0
+        widthDefault: 0,
+        offsetX: 0,
+        offsetY: 0
       },
       logo1Back: {
         url: "",
@@ -74,7 +76,9 @@ class Canvas extends React.Component {
         height: 0,
         heightDefault: 0,
         width: 0,
-        widthDefault: 0
+        widthDefault: 0,
+        offsetX: 0,
+        offsetY: 0
       },
       logo2Front: {
         url: "",
@@ -167,9 +171,7 @@ class Canvas extends React.Component {
         widthDefault: 0
       },
       allLogosFront: [],
-      allLogosBack: [],
-      offsetX: 0,
-      offsetY: 0
+      allLogosBack: []
     };
   }
 
@@ -202,6 +204,34 @@ class Canvas extends React.Component {
   toggleLoadingFunction(emptyRequest) {
     console.log("in toggle loading function end at canvas");
     this.props.toggleLoading(false);
+  }
+
+  saveLogoLocations() {
+    console.log("saving logo locations");
+
+    for (let i = 0; i < this.state.allLogosFront.length; i++) {
+      let currentKey = this.state.allLogosFront[i];
+      console.log(currentKey);
+
+      let copiedLogoState = this.state[currentKey];
+      console.log(copiedLogoState);
+      copiedLogoState.logoPositionX =
+        copiedLogoState.logoPositionX + copiedLogoState.offsetX;
+      copiedLogoState.logoPositionY =
+        copiedLogoState.logoPositionY + copiedLogoState.offsetY;
+      copiedLogoState.offsetX = 0;
+      copiedLogoState.offsetY = 0;
+      console.log(copiedLogoState);
+      this.setState({ [currentKey]: copiedLogoState });
+    }
+
+    // let logoCopy = this.state.logo1Front;
+    // logoCopy.logoPositionX =
+    // logoCopy.logoPositionX + this.state.offsetX;
+    // logoCopy.logoPositionY =
+    // logoCopy.logoPositionY + this.state.offsetY;
+    // console.log(logoCopy);
+    // this.setState({ logo1Front: logoCopy });
   }
 
   renderCanvas() {
@@ -238,16 +268,8 @@ class Canvas extends React.Component {
               marginLeft: "5%"
             }}
             onPress={() => {
-              let logoCopy = this.state.logo1Front;
-              logoCopy.logoPositionX =
-                logoCopy.logoPositionX + this.state.offsetX;
-              logoCopy.logoPositionY =
-                logoCopy.logoPositionY + this.state.offsetY;
-              console.log(logoCopy);
-              this.setState({ logo1Front: logoCopy });
+              this.saveLogoLocations();
               this.props.toggleFrontOrBack();
-              this.setState({ offsetX: 0 });
-              this.setState({ offsetY: 0 });
             }}
           >
             <Icon name="rotate-3d" size={50} />
@@ -656,7 +678,7 @@ class Canvas extends React.Component {
   }
 
   renderLogosFrontTest() {
-    // console.log("in render logos front");
+    // console.log("in render logos front test");
     // console.log(this.props.items);
 
     // const userLogos = this.props.items.logos.front;
@@ -701,8 +723,6 @@ class Canvas extends React.Component {
     console.log("in render logos front");
     console.log(this.state.logo1Front);
     console.log(this.state.allLogosFront);
-    console.log(this.state.offsetX);
-    console.log(this.state.offsetY);
 
     const userLogos = this.props.items.logos.front;
     const logoKeys = Object.keys(userLogos);
@@ -711,40 +731,36 @@ class Canvas extends React.Component {
     let startY = 0;
     let endX = 0;
     let endY = 0;
-    let rollingOffsetX = 0;
-    let rollingOffsetY = 0;
+    let offsetX = 0;
+    let offsetY = 0;
 
     return this.state.allLogosFront.map((currentKey, index) => (
       <Draggable
         onPressIn={({ nativeEvent }) => {
           console.log("on press");
-          // this.setState({ startOfPressX: nativeEvent.pageX });
-          // this.setState({ startOfPressY: nativeEvent.pageY });
-          // console.log(nativeEvent.pageX);
-          // console.log(nativeEvent.pageY);
           startX = nativeEvent.pageX;
           startY = nativeEvent.pageY;
-          console.log(startX);
-          console.log(startY);
+
+          console.log(startX + "," + startY);
         }}
         onDragRelease={({ nativeEvent }) => {
           console.log("on release");
-          // console.log(nativeEvent.pageX);
-          // console.log(nativeEvent.pageY);
 
           endX = nativeEvent.pageX;
           endY = nativeEvent.pageY;
 
-          this.setState({ offsetX: this.state.offsetX + endX - startX });
-          this.setState({ offsetY: this.state.offsetY + endY - startY });
+          offsetX = endX - startX;
+          offsetY = endY - startY;
 
-          console.log(endX);
-          console.log(endY);
+          console.log(endX + "," + endY);
 
-          // let logoCopy = this.state[currentKey];
-          // logoCopy.logoPositionX = logoCopy.logoPositionX + offsetX;
-          // logoCopy.logoPositionY = logoCopy.logoPositionY + offsetY;
+          let logoCopy = this.state[currentKey];
           // console.log(logoCopy);
+          logoCopy.offsetX = logoCopy.offsetX + offsetX;
+          logoCopy.offsetY = logoCopy.offsetY + offsetY;
+          // console.log(logoCopy);
+
+          this.setState({ [currentKey]: logoCopy });
 
           // this.setState({ [currentKey]: logoCopy });
           // this.props.rememberLogoLocation([
@@ -886,7 +902,7 @@ class Canvas extends React.Component {
   }
 
   renderLogosBackTest() {
-    console.log("in render logos front");
+    console.log("in render logos back test");
     // console.log(this.props.items);
 
     // const userLogos = this.props.items.logos.front;
@@ -928,7 +944,7 @@ class Canvas extends React.Component {
   }
 
   renderLogosBack() {
-    // console.log("in render logos front");
+    // console.log("in render logos back");
     // console.log(this.props.items);
 
     const userLogos = this.props.items.logos.back;
@@ -1098,7 +1114,9 @@ class Canvas extends React.Component {
           height: item[0].height,
           heightDefault: item[0].heightDefault,
           width: item[0].width,
-          widthDefault: item[0].widthDefault
+          widthDefault: item[0].widthDefault,
+          offsetX: 0,
+          offsetY: 0
         }
       });
       this.setState({
@@ -1114,7 +1132,9 @@ class Canvas extends React.Component {
           height: item[0].height,
           heightDefault: item[0].heightDefault,
           width: item[0].width,
-          widthDefault: item[0].widthDefault
+          widthDefault: item[0].widthDefault,
+          offsetX: 0,
+          offsetY: 0
         }
       });
       this.setState({
@@ -1130,7 +1150,9 @@ class Canvas extends React.Component {
           height: item[0].height,
           heightDefault: item[0].heightDefault,
           width: item[0].width,
-          widthDefault: item[0].widthDefault
+          widthDefault: item[0].widthDefault,
+          offsetX: 0,
+          offsetY: 0
         }
       });
       this.setState({
@@ -1146,7 +1168,9 @@ class Canvas extends React.Component {
           height: item[0].height,
           heightDefault: item[0].heightDefault,
           width: item[0].width,
-          widthDefault: item[0].widthDefault
+          widthDefault: item[0].widthDefault,
+          offsetX: 0,
+          offsetY: 0
         }
       });
       this.setState({
@@ -1162,7 +1186,9 @@ class Canvas extends React.Component {
           height: item[0].height,
           heightDefault: item[0].heightDefault,
           width: item[0].width,
-          widthDefault: item[0].widthDefault
+          widthDefault: item[0].widthDefault,
+          offsetX: 0,
+          offsetY: 0
         }
       });
       this.setState({
@@ -1178,48 +1204,14 @@ class Canvas extends React.Component {
           height: item[0].height,
           heightDefault: item[0].heightDefault,
           width: item[0].width,
-          widthDefault: item[0].widthDefault
+          widthDefault: item[0].widthDefault,
+          offsetX: 0,
+          offsetY: 0
         }
       });
       this.setState({
         allLogosFront: [...this.state.allLogosFront, "logo6Front"]
       });
-    }
-  }
-
-  checkLogoCount() {
-    if (this.props.items.front) {
-      console.log("check logo count front");
-      if (this.state.logo1Front.url === "") {
-        console.log("first front logo");
-        this.setState({
-          logo1Front: {
-            url: "qoiqd",
-            logoPositionX: 20,
-            logoPositionY: 20,
-            height: 20,
-            heightDefault: 20,
-            width: 20,
-            widthDefault: 20
-          }
-        });
-      } else if (this.state.logo2Front.url === "") {
-        console.log("second front logo");
-        this.setState({
-          logo2Front: {
-            url: "32390",
-            logoPositionX: 2320,
-            logoPositionY: 220,
-            height: 220,
-            heightDefault: 120,
-            width: 220,
-            widthDefault: 120
-          }
-        });
-      } else {
-      }
-    } else {
-      console.log("check logo count back");
     }
   }
 
