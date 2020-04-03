@@ -31,7 +31,6 @@ import { screenShotTest } from "../utilities/screenShotTest";
 import {
   changeGarment,
   getDefaultItems,
-  // chooseLogo,
   changeLogoDimensions,
   rememberLogoLocation,
   changeLogoPosition,
@@ -211,27 +210,35 @@ class Canvas extends React.Component {
 
     for (let i = 0; i < this.state.allLogosFront.length; i++) {
       let currentKey = this.state.allLogosFront[i];
-      console.log(currentKey);
+      // console.log(currentKey);
 
       let copiedLogoState = this.state[currentKey];
-      console.log(copiedLogoState);
+      // console.log(copiedLogoState);
       copiedLogoState.logoPositionX =
         copiedLogoState.logoPositionX + copiedLogoState.offsetX;
       copiedLogoState.logoPositionY =
         copiedLogoState.logoPositionY + copiedLogoState.offsetY;
       copiedLogoState.offsetX = 0;
       copiedLogoState.offsetY = 0;
-      console.log(copiedLogoState);
+      // console.log(copiedLogoState);
       this.setState({ [currentKey]: copiedLogoState });
     }
 
-    // let logoCopy = this.state.logo1Front;
-    // logoCopy.logoPositionX =
-    // logoCopy.logoPositionX + this.state.offsetX;
-    // logoCopy.logoPositionY =
-    // logoCopy.logoPositionY + this.state.offsetY;
-    // console.log(logoCopy);
-    // this.setState({ logo1Front: logoCopy });
+    for (let i = 0; i < this.state.allLogosBack.length; i++) {
+      let currentKey = this.state.allLogosBack[i];
+      // console.log(currentKey);
+
+      let copiedLogoState = this.state[currentKey];
+      // console.log(copiedLogoState);
+      copiedLogoState.logoPositionX =
+        copiedLogoState.logoPositionX + copiedLogoState.offsetX;
+      copiedLogoState.logoPositionY =
+        copiedLogoState.logoPositionY + copiedLogoState.offsetY;
+      copiedLogoState.offsetX = 0;
+      copiedLogoState.offsetY = 0;
+      // console.log(copiedLogoState);
+      this.setState({ [currentKey]: copiedLogoState });
+    }
   }
 
   renderCanvas() {
@@ -280,7 +287,7 @@ class Canvas extends React.Component {
               : this.renderLogosFront()
             : this.state.allLogosBack.length === 0
             ? null
-            : this.renderLogosBackTest()}
+            : this.renderLogosBack()}
           {this.props.items.front
             ? this.state.allLogosFront.length === 0
               ? null
@@ -677,48 +684,6 @@ class Canvas extends React.Component {
     );
   }
 
-  renderLogosFrontTest() {
-    // console.log("in render logos front test");
-    // console.log(this.props.items);
-
-    // const userLogos = this.props.items.logos.front;
-    // const logoKeys = Object.keys(userLogos);
-
-    // console.log(this.state.allLogosFront);
-
-    for (let i = 0; i < this.state.allLogosFront.length; i++) {
-      // console.log(this.state.allLogosFront[i]);
-      // console.log(this.state[this.state.allLogosFront[i]]);
-    }
-    // console.log(this.state);
-
-    return this.state.allLogosFront.map((currentKey, index) => (
-      <View
-        style={{
-          position: "absolute",
-          top: this.state[currentKey].logoPositionX,
-          left: this.state[currentKey].logoPositionY
-        }}
-      >
-        <View
-          style={{
-            width: this.state[currentKey].widthDefault,
-            height: this.state[currentKey].heightDefault,
-            margin: 5
-          }}
-        >
-          <Image
-            style={{ flex: 1, width: undefined, height: undefined }}
-            source={{
-              uri: this.state[currentKey].url
-            }}
-            resizeMode="contain"
-          />
-        </View>
-      </View>
-    ));
-  }
-
   renderLogosFront() {
     console.log("in render logos front");
     console.log(this.state.logo1Front);
@@ -761,15 +726,72 @@ class Canvas extends React.Component {
           // console.log(logoCopy);
 
           this.setState({ [currentKey]: logoCopy });
+        }}
+        x={this.state[currentKey].logoPositionX}
+        y={this.state[currentKey].logoPositionY}
+        key={"front" + currentKey}
+      >
+        <View
+          style={{
+            width: this.state[currentKey].widthDefault,
+            height: this.state[currentKey].heightDefault,
+            margin: 5
+          }}
+        >
+          <Image
+            style={{ flex: 1, width: undefined, height: undefined }}
+            source={{
+              uri: this.state[currentKey].url
+            }}
+            resizeMode="contain"
+          />
+        </View>
+      </Draggable>
+    ));
+  }
 
-          // this.setState({ [currentKey]: logoCopy });
-          // this.props.rememberLogoLocation([
-          //   currentKey,
-          //   nativeEvent,
-          //   { front: true },
-          //   this.state.startOfPressX,
-          //   this.state.startOfPressY
-          // ]);
+  renderLogosBack() {
+    console.log("in render logos back");
+    console.log(this.state.logo1Back);
+    console.log(this.state.allLogosBack);
+
+    const userLogos = this.props.items.logos.back;
+    const logoKeys = Object.keys(userLogos);
+
+    let startX = 0;
+    let startY = 0;
+    let endX = 0;
+    let endY = 0;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    return this.state.allLogosBack.map((currentKey, index) => (
+      <Draggable
+        onPressIn={({ nativeEvent }) => {
+          console.log("on press");
+          startX = nativeEvent.pageX;
+          startY = nativeEvent.pageY;
+
+          console.log(startX + "," + startY);
+        }}
+        onDragRelease={({ nativeEvent }) => {
+          console.log("on release");
+
+          endX = nativeEvent.pageX;
+          endY = nativeEvent.pageY;
+
+          offsetX = endX - startX;
+          offsetY = endY - startY;
+
+          console.log(endX + "," + endY);
+
+          let logoCopy = this.state[currentKey];
+          // console.log(logoCopy);
+          logoCopy.offsetX = logoCopy.offsetX + offsetX;
+          logoCopy.offsetY = logoCopy.offsetY + offsetY;
+          // console.log(logoCopy);
+
+          this.setState({ [currentKey]: logoCopy });
         }}
         x={this.state[currentKey].logoPositionX}
         y={this.state[currentKey].logoPositionY}
@@ -901,97 +923,6 @@ class Canvas extends React.Component {
     );
   }
 
-  renderLogosBackTest() {
-    console.log("in render logos back test");
-    // console.log(this.props.items);
-
-    // const userLogos = this.props.items.logos.front;
-    // const logoKeys = Object.keys(userLogos);
-
-    // console.log(this.state.allLogosFront);
-
-    for (let i = 0; i < this.state.allLogosFront.length; i++) {
-      // console.log(this.state.allLogosFront[i]);
-      // console.log(this.state[this.state.allLogosFront[i]]);
-    }
-    // console.log(this.state);
-
-    return this.state.allLogosFront.map((currentKey, index) => (
-      <View
-        style={{
-          position: "absolute",
-          top: this.state[currentKey].logoPositionX,
-          left: this.state[currentKey].logoPositionY
-        }}
-      >
-        <View
-          style={{
-            width: this.state[currentKey].widthDefault,
-            height: this.state[currentKey].heightDefault,
-            margin: 5
-          }}
-        >
-          <Image
-            style={{ flex: 1, width: undefined, height: undefined }}
-            source={{
-              uri: this.state[currentKey].url
-            }}
-            resizeMode="contain"
-          />
-        </View>
-      </View>
-    ));
-  }
-
-  renderLogosBack() {
-    // console.log("in render logos back");
-    // console.log(this.props.items);
-
-    const userLogos = this.props.items.logos.back;
-    const logoKeys = Object.keys(userLogos);
-
-    return logoKeys.map((currentKey, index) =>
-      userLogos[currentKey] === "" ? null : (
-        <Draggable
-          // onDragRelease={({ nativeEvent }) => {
-          //   this.props.rememberLogoLocation([
-          //     currentKey,
-          //     nativeEvent,
-          //     { front: true },
-          //     this.state.startOfPressX,
-          //     this.state.startOfPressY
-          //   ]);
-          // }}
-          // onPressIn={({ nativeEvent }) => {
-          //   this.setState({ startOfPressX: nativeEvent.pageX });
-          //   this.setState({ startOfPressY: nativeEvent.pageY });
-          //   // console.log(nativeEvent.pageX);
-          //   // console.log(nativeEvent.pageY);
-          // }}
-          x={userLogos[currentKey]["defaultLogoPositionX"]}
-          y={userLogos[currentKey]["defaultLogoPositionY"]}
-          key={"front" + currentKey}
-        >
-          <View
-            style={{
-              width: userLogos[currentKey]["widthDefault"],
-              height: userLogos[currentKey]["heightDefault"],
-              margin: 5
-            }}
-          >
-            <Image
-              style={{ flex: 1, width: undefined, height: undefined }}
-              source={{
-                uri: userLogos[currentKey]["url"]
-              }}
-              resizeMode="contain"
-            />
-          </View>
-        </Draggable>
-      )
-    );
-  }
-
   renderLogosToolbarBack() {
     const userLogos = this.props.items.logos.back;
     const logoKeys = Object.keys(userLogos);
@@ -1103,115 +1034,226 @@ class Canvas extends React.Component {
     console.log("choose logo at canvas");
     // console.log(item);
     // console.log(this.state.allLogosFront);
-
-    if (this.state.allLogosFront.indexOf("logo1Front") === -1) {
-      console.log("first logo");
-      this.setState({
-        logo1Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault,
-          offsetX: 0,
-          offsetY: 0
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo1Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo2Front") === -1) {
-      console.log("in 2nd front");
-      this.setState({
-        logo2Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault,
-          offsetX: 0,
-          offsetY: 0
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo2Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo3Front") === -1) {
-      console.log("in 3rd front");
-      this.setState({
-        logo3Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault,
-          offsetX: 0,
-          offsetY: 0
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo3Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo4Front") === -1) {
-      console.log("in 4th front");
-      this.setState({
-        logo4Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault,
-          offsetX: 0,
-          offsetY: 0
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo4Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo5Front") === -1) {
-      console.log("in 5 front");
-      this.setState({
-        logo5Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault,
-          offsetX: 0,
-          offsetY: 0
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo5Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo6Front") === -1) {
-      console.log("logo 6 front");
-      this.setState({
-        logo6Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault,
-          offsetX: 0,
-          offsetY: 0
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo6Front"]
-      });
+    if (this.props.items.front) {
+      if (this.state.allLogosFront.indexOf("logo1Front") === -1) {
+        console.log("first logo");
+        this.setState({
+          logo1Front: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosFront: [...this.state.allLogosFront, "logo1Front"]
+        });
+      } else if (this.state.allLogosFront.indexOf("logo2Front") === -1) {
+        console.log("in 2nd front");
+        this.setState({
+          logo2Front: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosFront: [...this.state.allLogosFront, "logo2Front"]
+        });
+      } else if (this.state.allLogosFront.indexOf("logo3Front") === -1) {
+        console.log("in 3rd front");
+        this.setState({
+          logo3Front: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosFront: [...this.state.allLogosFront, "logo3Front"]
+        });
+      } else if (this.state.allLogosFront.indexOf("logo4Front") === -1) {
+        console.log("in 4th front");
+        this.setState({
+          logo4Front: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosFront: [...this.state.allLogosFront, "logo4Front"]
+        });
+      } else if (this.state.allLogosFront.indexOf("logo5Front") === -1) {
+        console.log("in 5 front");
+        this.setState({
+          logo5Front: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosFront: [...this.state.allLogosFront, "logo5Front"]
+        });
+      } else if (this.state.allLogosFront.indexOf("logo6Front") === -1) {
+        console.log("logo 6 front");
+        this.setState({
+          logo6Front: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosFront: [...this.state.allLogosFront, "logo6Front"]
+        });
+      }
+    } else {
+      if (this.state.allLogosBack.indexOf("logo1Back") === -1) {
+        console.log("first logo back");
+        this.setState({
+          logo1Back: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosBack: [...this.state.allLogosBack, "logo1Back"]
+        });
+      } else if (this.state.allLogosBack.indexOf("logo2Back") === -1) {
+        console.log("second logo back");
+        this.setState({
+          logo2Back: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosBack: [...this.state.allLogosBack, "logo2Back"]
+        });
+      } else if (this.state.allLogosBack.indexOf("logo3Back") === -1) {
+        console.log("3 logo back");
+        this.setState({
+          logo3Back: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosBack: [...this.state.allLogosBack, "logo3Back"]
+        });
+      } else if (this.state.allLogosBack.indexOf("logo4Back") === -1) {
+        console.log("4 logo back");
+        this.setState({
+          logo4Back: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosBack: [...this.state.allLogosBack, "logo4Back"]
+        });
+      } else if (this.state.allLogosBack.indexOf("logo5Back") === -1) {
+        console.log("5 logo back");
+        this.setState({
+          logo5Back: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosBack: [...this.state.allLogosBack, "logo5Back"]
+        });
+      } else if (this.state.allLogosBack.indexOf("logo6Back") === -1) {
+        console.log("6 logo back");
+        this.setState({
+          logo6Back: {
+            url: item[0].url,
+            logoPositionX: item[0].defaultLogoPositionX,
+            logoPositionY: item[0].defaultLogoPositionY,
+            height: item[0].height,
+            heightDefault: item[0].heightDefault,
+            width: item[0].width,
+            widthDefault: item[0].widthDefault,
+            offsetX: 0,
+            offsetY: 0
+          }
+        });
+        this.setState({
+          allLogosBack: [...this.state.allLogosBack, "logo6Back"]
+        });
+      }
     }
   }
 
@@ -1363,7 +1405,6 @@ const mapDispatchToProps = dispatch => {
       login,
       addUserLogosToReducer,
       getLogos,
-      // chooseLogo,
       changeLogoDimensions,
       rememberLogoLocation,
       changeLogoPosition,
