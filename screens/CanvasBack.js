@@ -31,14 +31,13 @@ import { screenShotTest } from "../utilities/screenShotTest";
 import {
   changeGarment,
   getDefaultItems,
-  // chooseLogo,
+  chooseLogo,
   changeLogoDimensions,
   rememberLogoLocation,
-  changeLogoPosition,
-  toggleFrontOrBack
+  changeLogoPosition
 } from "../actions/items";
 
-class Canvas extends React.Component {
+class CanvasBack extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,119 +56,7 @@ class Canvas extends React.Component {
       defaultItems: {},
       loadingCanvasComponent: true,
       startOfPressX: 0,
-      startOfPressY: 0,
-      logo1Front: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo1Back: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo2Front: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo2Back: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo3Front: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo3Back: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo4Front: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo4Back: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo5Front: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo5Back: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo6Front: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      logo6Back: {
-        url: "",
-        logoPositionX: 0,
-        logoPositionY: 0,
-        height: 0,
-        heightDefault: 0,
-        width: 0,
-        widthDefault: 0
-      },
-      allLogosFront: [],
-      allLogosBack: [],
-      offsetX: 0,
-      offsetY: 0
+      startOfPressY: 0
     };
   }
 
@@ -185,7 +72,7 @@ class Canvas extends React.Component {
     // await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
     // await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
 
-    // this.setState({ defaultItems: defaultItems });
+    this.setState({ defaultItems: defaultItems });
 
     await this.props.login();
     await this.props.getLogos();
@@ -220,15 +107,9 @@ class Canvas extends React.Component {
         >
           <Image
             style={{ flex: 1, width: undefined, height: undefined }}
-            source={
-              this.props.items.front
-                ? {
-                    uri: this.props.items.shirtUrl
-                  }
-                : {
-                    uri: this.props.items.backShirtUrl
-                  }
-            }
+            source={{
+              uri: this.props.items.backShirtUrl
+            }}
             resizeMode="contain"
           />
           <TouchableOpacity
@@ -238,34 +119,13 @@ class Canvas extends React.Component {
               marginLeft: "5%"
             }}
             onPress={() => {
-              let logoCopy = this.state.logo1Front;
-              logoCopy.logoPositionX =
-                logoCopy.logoPositionX + this.state.offsetX;
-              logoCopy.logoPositionY =
-                logoCopy.logoPositionY + this.state.offsetY;
-              console.log(logoCopy);
-              this.setState({ logo1Front: logoCopy });
-              this.props.toggleFrontOrBack();
-              this.setState({ offsetX: 0 });
-              this.setState({ offsetY: 0 });
+              this.props.navigation.navigate("Canvas");
             }}
           >
             <Icon name="rotate-3d" size={50} />
           </TouchableOpacity>
-          {this.props.items.front
-            ? this.state.allLogosFront.length === 0
-              ? null
-              : this.renderLogosFront()
-            : this.state.allLogosBack.length === 0
-            ? null
-            : this.renderLogosBackTest()}
-          {this.props.items.front
-            ? this.state.allLogosFront.length === 0
-              ? null
-              : this.renderLogosToolbarFront()
-            : this.state.allLogosBack.length === 0
-            ? null
-            : this.renderLogosToolbarBack()}
+          {this.renderLogosBackTest()}
+          {this.renderLogosToolbarBack()}
         </View>
       </ViewShot>
     );
@@ -290,7 +150,7 @@ class Canvas extends React.Component {
         }}
       >
         <Text style={{ textAlign: "center" }}>
-          Choose Garment Front({currentVersion})
+          Choose Garment Back({currentVersion})
         </Text>
       </TouchableOpacity>
     );
@@ -655,280 +515,44 @@ class Canvas extends React.Component {
     );
   }
 
-  renderLogosFrontTest() {
-    // console.log("in render logos front");
+  renderLogosBackTest() {
+    // console.log("in render logos back");
     // console.log(this.props.items);
 
-    // const userLogos = this.props.items.logos.front;
-    // const logoKeys = Object.keys(userLogos);
-
-    // console.log(this.state.allLogosFront);
-
-    for (let i = 0; i < this.state.allLogosFront.length; i++) {
-      // console.log(this.state.allLogosFront[i]);
-      // console.log(this.state[this.state.allLogosFront[i]]);
-    }
-    // console.log(this.state);
-
-    return this.state.allLogosFront.map((currentKey, index) => (
-      <View
-        style={{
-          position: "absolute",
-          top: this.state[currentKey].logoPositionX,
-          left: this.state[currentKey].logoPositionY
-        }}
-      >
-        <View
-          style={{
-            width: this.state[currentKey].widthDefault,
-            height: this.state[currentKey].heightDefault,
-            margin: 5
-          }}
-        >
-          <Image
-            style={{ flex: 1, width: undefined, height: undefined }}
-            source={{
-              uri: this.state[currentKey].url
-            }}
-            resizeMode="contain"
-          />
-        </View>
-      </View>
-    ));
-  }
-
-  renderLogosFront() {
-    console.log("in render logos front");
-    console.log(this.state.logo1Front);
-    console.log(this.state.allLogosFront);
-    console.log(this.state.offsetX);
-    console.log(this.state.offsetY);
-
-    const userLogos = this.props.items.logos.front;
+    const userLogos = this.props.items.logos.back;
     const logoKeys = Object.keys(userLogos);
 
-    let startX = 0;
-    let startY = 0;
-    let endX = 0;
-    let endY = 0;
-    let rollingOffsetX = 0;
-    let rollingOffsetY = 0;
-
-    return this.state.allLogosFront.map((currentKey, index) => (
-      <Draggable
-        onPressIn={({ nativeEvent }) => {
-          console.log("on press");
-          // this.setState({ startOfPressX: nativeEvent.pageX });
-          // this.setState({ startOfPressY: nativeEvent.pageY });
-          // console.log(nativeEvent.pageX);
-          // console.log(nativeEvent.pageY);
-          startX = nativeEvent.pageX;
-          startY = nativeEvent.pageY;
-          console.log(startX);
-          console.log(startY);
-        }}
-        onDragRelease={({ nativeEvent }) => {
-          console.log("on release");
-          // console.log(nativeEvent.pageX);
-          // console.log(nativeEvent.pageY);
-
-          endX = nativeEvent.pageX;
-          endY = nativeEvent.pageY;
-
-          this.setState({ offsetX: this.state.offsetX + endX - startX });
-          this.setState({ offsetY: this.state.offsetY + endY - startY });
-
-          console.log(endX);
-          console.log(endY);
-
-          // let logoCopy = this.state[currentKey];
-          // logoCopy.logoPositionX = logoCopy.logoPositionX + offsetX;
-          // logoCopy.logoPositionY = logoCopy.logoPositionY + offsetY;
-          // console.log(logoCopy);
-
-          // this.setState({ [currentKey]: logoCopy });
-          // this.props.rememberLogoLocation([
-          //   currentKey,
-          //   nativeEvent,
-          //   { front: true },
-          //   this.state.startOfPressX,
-          //   this.state.startOfPressY
-          // ]);
-        }}
-        x={this.state[currentKey].logoPositionX}
-        y={this.state[currentKey].logoPositionY}
-        key={"front" + currentKey}
-      >
+    return logoKeys.map((currentKey, index) =>
+      userLogos[currentKey] === "" ? null : (
         <View
           style={{
-            width: this.state[currentKey].widthDefault,
-            height: this.state[currentKey].heightDefault,
-            margin: 5
+            position: "absolute",
+            top: userLogos[currentKey]["defaultLogoPositionX"],
+            left: userLogos[currentKey]["defaultLogoPositionY"]
           }}
         >
-          <Image
-            style={{ flex: 1, width: undefined, height: undefined }}
-            source={{
-              uri: this.state[currentKey].url
+          <View
+            style={{
+              width: userLogos[currentKey]["widthDefault"],
+              height: userLogos[currentKey]["heightDefault"],
+              margin: 5
             }}
-            resizeMode="contain"
-          />
+          >
+            <Image
+              style={{ flex: 1, width: undefined, height: undefined }}
+              source={{
+                uri: userLogos[currentKey]["url"]
+              }}
+              resizeMode="contain"
+            />
+          </View>
         </View>
-      </Draggable>
-    ));
-  }
-
-  renderLogosToolbarFront() {
-    const userLogos = this.props.items.logos.front;
-    const logoKeys = Object.keys(userLogos);
-
-    return (
-      <View
-        style={{
-          position: "absolute",
-          top: 190,
-          right: 20,
-          width: 70
-        }}
-      >
-        <View>
-          {logoKeys.map((currentKey, index) =>
-            userLogos[currentKey] === "" ? null : (
-              <View>
-                <Text>Logo {index}</Text>
-                <View style={{ flexDirection: "row" }}>
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      onPress={() => {
-                        this.props.changeLogoDimensions({
-                          logoId: index + 1,
-                          type: "inc",
-                          front: true
-                        });
-                      }}
-                    >
-                      Inc
-                    </Text>
-                  </View>
-                  <View style={{ width: "50%" }}>
-                    <Text
-                      onPress={() => {
-                        this.props.changeLogoDimensions({
-                          logoId: index + 1,
-                          type: "dec",
-                          front: true
-                        });
-                      }}
-                    >
-                      Dec
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={{ width: "100%", marginVertical: 10 }}>
-                  <Text
-                    onPress={() => {
-                      this.props.changeLogoPosition({
-                        logoId: index + 1,
-                        type: "up",
-                        front: true
-                      });
-                    }}
-                  >
-                    Up
-                  </Text>
-                </View>
-                <View style={{ width: "100%", marginVertical: 10 }}>
-                  <Text
-                    onPress={() => {
-                      this.props.changeLogoPosition({
-                        logoId: index + 1,
-                        type: "right",
-                        front: true
-                      });
-                    }}
-                  >
-                    Right
-                  </Text>
-                </View>
-                <View style={{ width: "100%", marginVertical: 10 }}>
-                  <Text
-                    onPress={() => {
-                      this.props.changeLogoPosition({
-                        logoId: index + 1,
-                        type: "down",
-                        front: true
-                      });
-                    }}
-                  >
-                    Down
-                  </Text>
-                </View>
-                <View style={{ width: "100%", marginVertical: 10 }}>
-                  <Text
-                    onPress={() => {
-                      this.props.changeLogoPosition({
-                        logoId: index + 1,
-                        type: "left",
-                        front: true
-                      });
-                    }}
-                  >
-                    Left
-                  </Text>
-                </View>
-              </View>
-            )
-          )}
-        </View>
-      </View>
+      )
     );
   }
 
-  renderLogosBackTest() {
-    console.log("in render logos front");
-    // console.log(this.props.items);
-
-    // const userLogos = this.props.items.logos.front;
-    // const logoKeys = Object.keys(userLogos);
-
-    // console.log(this.state.allLogosFront);
-
-    for (let i = 0; i < this.state.allLogosFront.length; i++) {
-      // console.log(this.state.allLogosFront[i]);
-      // console.log(this.state[this.state.allLogosFront[i]]);
-    }
-    // console.log(this.state);
-
-    return this.state.allLogosFront.map((currentKey, index) => (
-      <View
-        style={{
-          position: "absolute",
-          top: this.state[currentKey].logoPositionX,
-          left: this.state[currentKey].logoPositionY
-        }}
-      >
-        <View
-          style={{
-            width: this.state[currentKey].widthDefault,
-            height: this.state[currentKey].heightDefault,
-            margin: 5
-          }}
-        >
-          <Image
-            style={{ flex: 1, width: undefined, height: undefined }}
-            source={{
-              uri: this.state[currentKey].url
-            }}
-            resizeMode="contain"
-          />
-        </View>
-      </View>
-    ));
-  }
-
   renderLogosBack() {
-    // console.log("in render logos front");
+    // console.log("in render logos back");
     // console.log(this.props.items);
 
     const userLogos = this.props.items.logos.back;
@@ -941,7 +565,7 @@ class Canvas extends React.Component {
           //   this.props.rememberLogoLocation([
           //     currentKey,
           //     nativeEvent,
-          //     { front: true },
+          //     { back: true },
           //     this.state.startOfPressX,
           //     this.state.startOfPressY
           //   ]);
@@ -954,7 +578,7 @@ class Canvas extends React.Component {
           // }}
           x={userLogos[currentKey]["defaultLogoPositionX"]}
           y={userLogos[currentKey]["defaultLogoPositionY"]}
-          key={"front" + currentKey}
+          key={"back" + currentKey}
         >
           <View
             style={{
@@ -1083,146 +707,6 @@ class Canvas extends React.Component {
     );
   }
 
-  chooseLogo(item) {
-    console.log("choose logo at canvas");
-    // console.log(item);
-    // console.log(this.state.allLogosFront);
-
-    if (this.state.allLogosFront.indexOf("logo1Front") === -1) {
-      console.log("first logo");
-      this.setState({
-        logo1Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo1Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo2Front") === -1) {
-      console.log("in 2nd front");
-      this.setState({
-        logo2Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo2Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo3Front") === -1) {
-      console.log("in 3rd front");
-      this.setState({
-        logo3Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo3Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo4Front") === -1) {
-      console.log("in 4th front");
-      this.setState({
-        logo4Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo4Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo5Front") === -1) {
-      console.log("in 5 front");
-      this.setState({
-        logo5Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo5Front"]
-      });
-    } else if (this.state.allLogosFront.indexOf("logo6Front") === -1) {
-      console.log("logo 6 front");
-      this.setState({
-        logo6Front: {
-          url: item[0].url,
-          logoPositionX: item[0].defaultLogoPositionX,
-          logoPositionY: item[0].defaultLogoPositionY,
-          height: item[0].height,
-          heightDefault: item[0].heightDefault,
-          width: item[0].width,
-          widthDefault: item[0].widthDefault
-        }
-      });
-      this.setState({
-        allLogosFront: [...this.state.allLogosFront, "logo6Front"]
-      });
-    }
-  }
-
-  checkLogoCount() {
-    if (this.props.items.front) {
-      console.log("check logo count front");
-      if (this.state.logo1Front.url === "") {
-        console.log("first front logo");
-        this.setState({
-          logo1Front: {
-            url: "qoiqd",
-            logoPositionX: 20,
-            logoPositionY: 20,
-            height: 20,
-            heightDefault: 20,
-            width: 20,
-            widthDefault: 20
-          }
-        });
-      } else if (this.state.logo2Front.url === "") {
-        console.log("second front logo");
-        this.setState({
-          logo2Front: {
-            url: "32390",
-            logoPositionX: 2320,
-            logoPositionY: 220,
-            height: 220,
-            heightDefault: 120,
-            width: 220,
-            widthDefault: 120
-          }
-        });
-      } else {
-      }
-    } else {
-      console.log("check logo count back");
-    }
-  }
-
   renderChooseLogoModal() {
     let allLogos = [];
     // console.log("in render choose logo modal");
@@ -1282,7 +766,11 @@ class Canvas extends React.Component {
                       }}
                       key={index}
                       onPress={() => {
-                        this.chooseLogo([this.props.user.logos[item], item]);
+                        this.props.chooseLogo([
+                          this.props.user.logos[item],
+                          item,
+                          { front: false }
+                        ]);
                         this.setState({ showLogoChooseDetail: false });
                       }}
                     >
@@ -1371,11 +859,10 @@ const mapDispatchToProps = dispatch => {
       login,
       addUserLogosToReducer,
       getLogos,
-      // chooseLogo,
+      chooseLogo,
       changeLogoDimensions,
       rememberLogoLocation,
-      changeLogoPosition,
-      toggleFrontOrBack
+      changeLogoPosition
     },
     dispatch
   );
@@ -1392,4 +879,4 @@ const mapStateToProps = state => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Canvas);
+)(CanvasBack);
