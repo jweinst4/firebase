@@ -94,21 +94,32 @@ getImageUrl = async fileName => {
 
 addToUserTable = async calculatedUrlAndUser => {
   console.log("in add to user table at canvas");
-  // console.log(calculatedUrlAndUser);
+  console.log("canvas state below");
 
-  let url = calculatedUrlAndUser[1];
-  let name = calculatedUrlAndUser[0].displayName;
+  let canvasState = calculatedUrlAndUser[1];
+
+  let url = calculatedUrlAndUser[0][1];
+  let name = calculatedUrlAndUser[0][0].displayName;
 
   let imageDatabaseKey = Math.floor(Math.random() * 1000000 + 1);
+  console.log("url key below");
   let urlKey = imageDatabaseKey;
+  console.log(urlKey);
 
+  let newBody = {
+    url: url,
+    state: canvasState
+  };
   let updatedRoute =
     "https://tester-859c6.firebaseio.com/users/" + name + "/images/.json?";
 
   let response = await fetch(updatedRoute, {
     method: "PATCH",
     body: JSON.stringify({
-      ["url" + urlKey]: url
+      [urlKey]: {
+        url: url,
+        state: canvasState
+      }
     }),
     headers: {
       "Content-Type": "application/json;charset=utf-8"
@@ -118,31 +129,31 @@ addToUserTable = async calculatedUrlAndUser => {
   return [url, urlKey];
 };
 
-addLogoToUserTable = async calculatedUrlAndUser => {
-  console.log("in add to user table at canvas");
-  // console.log(calculatedUrlAndUser);
+// addLogoToUserTable = async calculatedUrlAndUser => {
+//   console.log("in add to user table at canvas");
+//   // console.log(calculatedUrlAndUser);
 
-  let url = calculatedUrlAndUser[1];
-  let name = calculatedUrlAndUser[0].displayName;
+//   let url = calculatedUrlAndUser[1];
+//   let name = calculatedUrlAndUser[0].displayName;
 
-  let imageDatabaseKey = Math.floor(Math.random() * 1000000 + 1);
-  let urlKey = imageDatabaseKey;
+//   let imageDatabaseKey = Math.floor(Math.random() * 1000000 + 1);
+//   let urlKey = imageDatabaseKey;
 
-  let updatedRoute =
-    "https://tester-859c6.firebaseio.com/users/" + name + "/logos/.json?";
+//   let updatedRoute =
+//     "https://tester-859c6.firebaseio.com/users/" + name + "/logos/.json?";
 
-  let response = await fetch(updatedRoute, {
-    method: "PATCH",
-    body: JSON.stringify({
-      ["url" + urlKey]: url
-    }),
-    headers: {
-      "Content-Type": "application/json;charset=utf-8"
-    }
-  });
+//   let response = await fetch(updatedRoute, {
+//     method: "PATCH",
+//     body: JSON.stringify({
+//       ["url" + urlKey]: url
+//     }),
+//     headers: {
+//       "Content-Type": "application/json;charset=utf-8"
+//     }
+//   });
 
-  return [url, urlKey];
-};
+//   return [url, urlKey];
+// };
 
 sendEmail = async imageInformation => {
   console.log("in send email at canvas");
@@ -155,7 +166,12 @@ sendEmail = async imageInformation => {
   // const toEmail2 = "theLastAlaskn@gmail.com";
   // const ccEmail = "jweinst4@gmail.com";
   const subject = "You created a design!";
-  const details = "<html><body><img src='" + url + "'></body></html>";
+  const details =
+    "<html><body><img src='" +
+    url +
+    "'><div>" +
+    canvasState +
+    "</div></div></body></html>";
 
   const apiKey = MAIL_API_KEY;
 
@@ -266,32 +282,6 @@ getImageUrl = async fileName => {
   return returnedData;
 };
 
-addToUserTable = async calculatedUrlAndUser => {
-  console.log("in add to user table at canvas");
-  // console.log(calculatedUrlAndUser);
-
-  let url = calculatedUrlAndUser[1];
-  let name = calculatedUrlAndUser[0].displayName;
-
-  let imageDatabaseKey = Math.floor(Math.random() * 1000000 + 1);
-  let urlKey = imageDatabaseKey;
-
-  let updatedRoute =
-    "https://tester-859c6.firebaseio.com/users/" + name + "/images/.json?";
-
-  let response = await fetch(updatedRoute, {
-    method: "PATCH",
-    body: JSON.stringify({
-      ["url" + urlKey]: url
-    }),
-    headers: {
-      "Content-Type": "application/json;charset=utf-8"
-    }
-  });
-
-  return [url, urlKey];
-};
-
 sendEmail = async imageInformation => {
   console.log("in send email at canvas");
   // console.log(imageInformation);
@@ -351,7 +341,7 @@ sendEmail = async imageInformation => {
   // return response;
 };
 
-export const screenShotTest = async () => {
+export const screenShotUtility = async canvasState => {
   console.log("at screen shot test");
 
   const uriHere = await this.saveCanvas();
@@ -369,7 +359,11 @@ export const screenShotTest = async () => {
 
   const calculatedUrlAndUser = await this.getImageUrl(handleImagePickedResult);
 
-  const imageInformation = await this.addToUserTable(calculatedUrlAndUser);
+  // console.log(canvasState);
+  const imageInformation = await this.addToUserTable([
+    calculatedUrlAndUser,
+    canvasState
+  ]);
 
   const emailSent = await this.sendEmail(imageInformation);
 

@@ -4,7 +4,6 @@ import Login from "../screens/Login";
 import Signup from "../screens/Signup";
 import Profile from "../screens/Profile";
 import Canvas from "../screens/Canvas";
-import CanvasBack from "../screens/CanvasBack";
 
 const SwitchNavigator = createSwitchNavigator(
   {
@@ -19,9 +18,6 @@ const SwitchNavigator = createSwitchNavigator(
     },
     Canvas: {
       screen: Canvas
-    },
-    CanvasBack: {
-      screen: CanvasBack
     }
   },
   {

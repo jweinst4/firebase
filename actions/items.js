@@ -5,6 +5,7 @@ export const CHANGE_LOGO_DIMENSIONS = "CHANGE_LOGO_DIMENSIONS";
 export const REMEMBER_LOGO_LOCATION = "REMEMBER_LOGO_LOCATION";
 export const CHANGE_LOGO_POSITION = "CHANGE_LOGO_POSITION";
 export const TOGGLE_FRONT_OR_BACK = "TOGGLE_FRONT_OR_BACK";
+export const SET_CURRENT_SCALE = "SET_CURRENT_SCALE";
 
 export const changeGarment = value => {
   // console.log("in change garment in items");
@@ -59,5 +60,13 @@ export const toggleFrontOrBack = () => {
   return {
     type: TOGGLE_FRONT_OR_BACK,
     payload: ""
+  };
+};
+
+export const setCurrentScale = value => {
+  // console.log("in toggle front or back in items");
+  return {
+    type: SET_CURRENT_SCALE,
+    payload: value
   };
 };
