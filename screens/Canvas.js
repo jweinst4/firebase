@@ -42,13 +42,11 @@ class Canvas extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      imageUri: "",
       showDetail: false,
       detailType: "",
       showLogoUploadDetail: false,
       showLogoChooseDetail: false,
       showTextDetail: false,
-      defaultItems: {},
       logoChangeScalar: 1.1,
       currentScale: 1,
       logo1Front: {
@@ -234,12 +232,12 @@ class Canvas extends React.Component {
   };
 
   async componentDidMount() {
-    // this.props.toggleLoading(true);
     await Permissions.askAsync(Permissions.CAMERA);
     await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    this.props.toggleLoading(true);
     await this.props.login();
     await this.props.getLogos();
-    // this.props.toggleLoading(false);
+    this.props.toggleLoading(false);
   }
 
   screenshotHandler = async () => {
@@ -438,104 +436,210 @@ class Canvas extends React.Component {
     return (
       <View
         style={{
-          justifyContent: "center",
-          alignItems: "center",
           width: "100%",
-          height: 200
-          // backgroundColor: "pink"
+          height: 200,
+          alignSelf: "stretch"
         }}
       >
         {this.renderUploadLogoModal()}
         {this.renderChooseLogoModal()}
         <TouchableOpacity
-          style={{
-            height: "10%",
-            width: "100%"
-            // backgroundColor: "blue"
-          }}
+          style={{ height: "10%", width: "100%" }}
           onPress={() => {
             this.setState({ showDetail: false });
           }}
         >
-          <Text style={{ textAlign: "right", marginRight: 10 }}>X</Text>
+          <Text
+            style={{
+              textAlign: "right",
+              marginRight: 10,
+              position: "relative",
+              marginLeft: "90%",
+              fontSize: 16
+            }}
+          >
+            X
+          </Text>
         </TouchableOpacity>
-
         <View
           style={{
+            width: "100%",
             height: "80%",
-            // backgroundColor: "yellow",
+            flexDirection: "row",
+            flex: 1,
             justifyContent: "center",
             alignItems: "center"
           }}
         >
-          <View
+          <TouchableOpacity
             style={{
-              flexDirection: "row",
+              width: "30%",
+              marginHorizontal: 5,
+              borderWidth: 2,
+              borderRadius: 1,
+              borderColor: "black",
+              height: 100,
               justifyContent: "center",
-              alignItems: "center",
-              // backgroundColor: "red",
-              borderWidth: 1,
-              borderRadius: 5,
-              height: "100%"
+              alignItems: "center"
+            }}
+            onPress={() => {
+              console.log("pressing");
+              this.setState({ showLogoUploadDetail: true });
             }}
           >
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                width: "30%"
-                // backgroundColor: "white"
-              }}
-            >
-              <Text
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  textAlign: "center",
-                  // backgroundColor: "grey",
-                  flex: 1
-                }}
-                onPress={() => {
-                  this.setState({ showLogoUploadDetail: true });
-                }}
-              >
-                Upload Logo
-              </Text>
-            </View>
-            <Text
-              style={{
-                width: "30%",
-                height: "80%",
-                textAlign: "center"
-              }}
-              onPress={() => {
-                this.setState({ showLogoChooseDetail: true });
-              }}
-            >
-              Choose Logo
-            </Text>
-            <Text
-              style={{
-                width: "30%",
-                height: "80%",
-                textAlign: "center"
-              }}
-              onPress={() => {
-                this.setState({ showTextDetail: true });
-              }}
-            >
-              Choose Text
-            </Text>
-          </View>
+            <Text style={{ textAlign: "center" }}>Upload Logo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              width: "30%",
+              marginHorizontal: 5,
+              borderWidth: 2,
+              borderRadius: 1,
+              borderColor: "black",
+              height: 100,
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+            onPress={() => {
+              this.setState({ showLogoChooseDetail: true });
+            }}
+          >
+            <Text style={{ textAlign: "center" }}>Choose Logo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              width: "30%",
+              marginHorizontal: 5,
+              borderWidth: 2,
+              borderRadius: 1,
+              borderColor: "black",
+              height: 100,
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <Text style={{ textAlign: "center" }}>Add Text</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
+        <View
           style={{
-            height: "10%",
-            width: "100%"
-            // backgroundColor: "green"
+            width: "100%",
+            height: "10%"
           }}
-        ></TouchableOpacity>
+        ></View>
       </View>
+      //   style={{
+      //     justifyContent: "center",
+      //     alignItems: "center",
+      //     width: "100%",
+      //     height: 200,
+      //     backgroundColor: "red"
+      //   }}
+      // >
+      //   <Text style={{ width: "100%" }}>Tester</Text>
+      // </View>
+      // <View
+      //   style={{
+      //     justifyContent: "center",
+      //     alignItems: "center",
+      //     width: "100%",
+      //     height: 200
+      //     // backgroundColor: "pink"
+      //   }}
+      // >
+      //   {this.renderUploadLogoModal()}
+      //   {this.renderChooseLogoModal()}
+      //   <TouchableOpacity
+      //     style={{
+      //       height: "10%",
+      //       width: "100%"
+      //       // backgroundColor: "blue"
+      //     }}
+      //     onPress={() => {
+      //       this.setState({ showDetail: false });
+      //     }}
+      //   >
+      //     <Text style={{ textAlign: "right", marginRight: 10 }}>X</Text>
+      //   </TouchableOpacity>
+
+      //   <View
+      //     style={{
+      //       height: "80%",
+      //       // backgroundColor: "yellow",
+      //       justifyContent: "center",
+      //       alignItems: "center"
+      //     }}
+      //   >
+      //     <View
+      //       style={{
+      //         flexDirection: "row",
+      //         justifyContent: "center",
+      //         alignItems: "center",
+      //         // backgroundColor: "red",
+      //         borderWidth: 1,
+      //         borderRadius: 5,
+      //         height: "100%"
+      //       }}
+      //     >
+      //       <View
+      //         style={{
+      //           justifyContent: "center",
+      //           alignItems: "center",
+      //           width: "30%"
+      //           // backgroundColor: "white"
+      //         }}
+      //       >
+      //         <Text
+      //           style={{
+      //             width: "100%",
+      //             height: "100%",
+      //             textAlign: "center",
+      //             // backgroundColor: "grey",
+      //             flex: 1
+      //           }}
+      //           onPress={() => {
+      //             this.setState({ showLogoUploadDetail: true });
+      //           }}
+      //         >
+      //           Upload Logo
+      //         </Text>
+      //       </View>
+      //       <Text
+      //         style={{
+      //           width: "30%",
+      //           height: "80%",
+      //           textAlign: "center"
+      //         }}
+      //         onPress={() => {
+      //           this.setState({ showLogoChooseDetail: true });
+      //         }}
+      //       >
+      //         Choose Logo
+      //       </Text>
+      //       <Text
+      //         style={{
+      //           width: "30%",
+      //           height: "80%",
+      //           textAlign: "center"
+      //         }}
+      //         onPress={() => {
+      //           this.setState({ showTextDetail: true });
+      //         }}
+      //       >
+      //         Choose Text
+      //       </Text>
+      //     </View>
+      //   </View>
+      //   <TouchableOpacity
+      //     style={{
+      //       height: "10%",
+      //       width: "100%"
+      //       // backgroundColor: "green"
+      //     }}
+      //   ></TouchableOpacity>
+      // </View>
     );
   }
 
@@ -555,7 +659,7 @@ class Canvas extends React.Component {
             this.setState({ showDetail: false });
           }}
         >
-          <Text style={{ textAlign: "right", marginRight: 10 }}>X</Text>
+          <Text style={{ marginLeft: "90%" }}>X</Text>
         </TouchableOpacity>
         <ScrollView>
           <View style={{ height: "80%" }}>
@@ -618,11 +722,9 @@ class Canvas extends React.Component {
   renderToolbar() {
     return (
       <View>
-        <View>
-          {this.state.showDetail
-            ? this.renderDetailOptions()
-            : this.renderNonDetailOptions()}
-        </View>
+        {this.state.showDetail
+          ? this.renderDetailOptions()
+          : this.renderNonDetailOptions()}
       </View>
     );
   }
@@ -630,32 +732,47 @@ class Canvas extends React.Component {
   renderUploadLogoModal() {
     return (
       <Modal
-        style={{ height: "100%" }}
+        style={{
+          height: "100%",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+          borderWidth: 1,
+          backgroundColor: "red"
+        }}
         animationType="slide"
         transparent={true}
         visible={this.state.showLogoUploadDetail}
       >
         <View
           style={{
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            top: 0,
+            height: "40%",
+            width: "60%",
+            marginTop: "60%",
+            marginLeft: "20%",
+            borderWidth: 1,
+            borderRadius: 5,
+            backgroundColor: "white",
             justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "white"
+            alignItems: "center"
           }}
         >
-          <View>
-            <Text>In Show Logo Upload Modal</Text>
-            <Text
-              onPress={() => {
-                this.setState({ showLogoUploadDetail: false });
+          <View style={{ flexDirection: "column" }}>
+            <View style={{ height: "40%", width: "100%" }}></View>
+            <View
+              style={{
+                height: "20%",
+                width: "100%",
+                marginTop: 130,
+                padding: 5,
+                borderWidth: 1
               }}
             >
-              Close
-            </Text>
-            <ImagePickerComponent />
+              <ImagePickerComponent />
+            </View>
+
+            <View style={{ height: "40%", width: "100%" }}></View>
+            <View style={{ height: "40%" }}></View>
           </View>
         </View>
       </Modal>
@@ -683,7 +800,6 @@ class Canvas extends React.Component {
 
   renderLogos() {
     console.log("in render logos");
-    console.log(this.state);
 
     let startX = 0;
     let startY = 0;
@@ -699,7 +815,7 @@ class Canvas extends React.Component {
     }
 
     let newKey = "allLogos" + frontOrBack;
-    console.log(newKey);
+    // console.log(newKey);
 
     return this.state[newKey].map((currentKey, index) => (
       <Draggable
@@ -811,7 +927,7 @@ class Canvas extends React.Component {
       >
         <View>
           {userLogos.map((currentKey, index) => (
-            <View>
+            <View key={currentKey}>
               <Text>{currentKey}</Text>
               <View style={{ flexDirection: "row" }}>
                 <View style={{ width: "50%" }}>
@@ -1020,11 +1136,14 @@ class Canvas extends React.Component {
     return (
       <View>
         {this.renderModal()}
-        <View style={{ height: "70%" }}>{this.renderCanvas()}</View>
+        <View style={{ height: "70%", width: "100%" }}>
+          {this.renderCanvas()}
+        </View>
 
         <View
           style={{
             height: "30%",
+            width: "100%",
             justifyContent: "center",
             alignItems: "center"
           }}

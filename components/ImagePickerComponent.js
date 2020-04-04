@@ -1,7 +1,14 @@
 // https://github.com/expo/examples/blob/master/with-firebase-storage-upload/App.js
 
 import React from "react";
-import { View, StyleSheet, Text, Button, StatusBar } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Button,
+  StatusBar,
+  TouchableOpacity
+} from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import {
@@ -240,40 +247,16 @@ class ImagePickerComponent extends React.Component {
     let { image } = this.state;
 
     return (
-      <View
+      <TouchableOpacity
         style={{
-          alignItems: "center",
-          justifyContent: "center",
-          height: 40,
-          backgroundColor: "red",
-          borderWidth: 1
+          height: 40
+        }}
+        onPress={() => {
+          this.uploadImageHandler();
         }}
       >
-        {!!image && (
-          <Text
-            style={{
-              fontSize: 20,
-              marginBottom: 20,
-              textAlign: "center",
-              marginHorizontal: 15
-            }}
-          >
-            Example: Upload ImagePicker result
-          </Text>
-        )}
-
-        <Button
-          onPress={() => {
-            this.uploadImageHandler();
-          }}
-          title="Pick an image from camera roll"
-        />
-
-        {this._maybeRenderImage()}
-        {this._maybeRenderUploadingOverlay()}
-
-        <StatusBar barStyle="default" />
-      </View>
+        <Text>Choose Image From Camera</Text>
+      </TouchableOpacity>
     );
   }
 
