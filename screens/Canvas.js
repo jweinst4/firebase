@@ -86,6 +86,7 @@ class Canvas extends React.Component {
       showLogoChooseDetail: false,
       showTextDetail: false,
       logoChangeScalar: 1.1,
+      textChangeScalar: 1.1,
       currentScale: 1,
       allLogosFront: [],
       allLogosBack: [],
@@ -95,6 +96,7 @@ class Canvas extends React.Component {
       currentTextColor: colors[0],
       zIndexList: [],
       editZIndexModal: false,
+      editLogoAndTextSizeModal: false,
       logo1Front: {
         url: "",
         logoPositionX: 0,
@@ -497,21 +499,40 @@ class Canvas extends React.Component {
     return (
       <View
         style={{
-          position: "absolute",
-          left: 5,
-          top: 200,
-          width: 50,
-          height: 30
+          width: "100%",
+          height: "100%",
+          justifyContent: "space-around",
+          alignItems: "center"
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            this.setState({ editZIndexModal: true });
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 50,
+            height: 100,
+            width: "90%",
+            marginLeft: "5%",
+            justifyContent: "space-around"
           }}
         >
-          <Text>Edit Z Index</Text>
-        </TouchableOpacity>
-        {this.state.editZIndexModal ? this.renderZIndexModal() : null}
+          <TouchableOpacity
+            onPress={() => {
+              this.setState({ editZIndexModal: true });
+            }}
+            style={{
+              borderWidth: 1,
+              borderRadius: 5,
+              height: 50,
+              width: "30%",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <Text>Edit Logo and Text Details</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -548,6 +569,127 @@ class Canvas extends React.Component {
     this.setState({ zIndexList: zIndexCopy });
   }
 
+  renderLogoAndTextSizeModal() {
+    console.log("in logo and text size modal");
+
+    return (
+      <Modal
+        style={{
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+        animationType="slide"
+        transparent={true}
+      >
+        <View
+          style={{
+            height: "40%",
+            width: "100%",
+            position: "absolute",
+            bottom: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "pink",
+            borderWidth: 1,
+            justifyContent: "center"
+          }}
+        >
+          <View
+            style={{
+              height: "100%",
+              width: "100%",
+              flexDirection: "column",
+              justifyContent: "center"
+            }}
+          >
+            <View style={{ height: "10%", justifyContent: "center" }}>
+              <Text
+                style={{ textAlign: "right", fontSize: 24, marginRight: 10 }}
+                onPress={() => {
+                  this.setState({ editLogoAndTextSizeModal: false });
+                }}
+              >
+                X
+              </Text>
+            </View>
+            <View
+              style={{
+                height: "80%",
+                width: "100%",
+                justifyContent: "center",
+                backgroundColor: "orange"
+              }}
+            >
+              <ScrollView persistentScrollbar={true}>
+                {this.state.zIndexList.map((item, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: "row",
+                      width: "100%",
+                      backgroundColor: "green"
+                    }}
+                  >
+                    <View style={{ width: "20%", backgroundColor: "red" }}>
+                      <Text>{item}</Text>
+                    </View>
+                    <View style={{ width: "40%", backgroundColor: "blue" }}>
+                      <Text
+                        onPress={() => {
+                          let copiedLogo = this.state[item];
+                          if (item.includes("logo")) {
+                            copiedLogo.widthDefault =
+                              copiedLogo.widthDefault *
+                              this.state.logoChangeScalar;
+                            copiedLogo.heightDefault =
+                              copiedLogo.heightDefault *
+                              this.state.logoChangeScalar;
+                          } else {
+                            copiedLogo.fontSize *= this.state.textChangeScalar;
+                          }
+                          console.log(item);
+                          console.log(copiedLogo);
+
+                          this.setState({ [item]: copiedLogo });
+                        }}
+                      >
+                        Inc
+                      </Text>
+                    </View>
+                    <View style={{ width: "40%", backgroundColor: "yellow" }}>
+                      <Text
+                        onPress={() => {
+                          let copiedLogo = this.state[item];
+                          if (item.includes("logo")) {
+                            copiedLogo.widthDefault =
+                              copiedLogo.widthDefault /
+                              this.state.logoChangeScalar;
+                            copiedLogo.heightDefault =
+                              copiedLogo.heightDefault /
+                              this.state.logoChangeScalar;
+                          } else {
+                            copiedLogo.fontSize /= this.state.textChangeScalar;
+                          }
+                          console.log(item);
+                          console.log(copiedLogo);
+
+                          this.setState({ [item]: copiedLogo });
+                        }}
+                      >
+                        Dec
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+            <View style={{ height: "10%" }}></View>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
   renderZIndexModal() {
     console.log("in render z index modal");
     console.log(this.state.zIndexList);
@@ -570,13 +712,18 @@ class Canvas extends React.Component {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "white",
-            borderWidth: 1
+            borderWidth: 1,
+            justifyContent: "center"
           }}
         >
           <View
-            style={{ width: "100%", height: "100%", flexDirection: "column" }}
+            style={{
+              height: "100%",
+              flexDirection: "column",
+              justifyContent: "center"
+            }}
           >
-            <View style={{ width: "100%", height: "10%" }}>
+            <View style={{ height: "10%", justifyContent: "center" }}>
               <Text
                 style={{ textAlign: "right", fontSize: 24, marginRight: 10 }}
                 onPress={() => {
@@ -586,36 +733,123 @@ class Canvas extends React.Component {
                 X
               </Text>
             </View>
-            <View style={{ width: "100%", height: "80%" }}>
+            <View style={{ height: "80%", justifyContent: "center" }}>
               <ScrollView persistentScrollbar={true}>
                 {this.state.zIndexList.map((item, index) => (
                   <View key={index}>
-                    <View style={{ flexDirection: "row" }}>
-                      <TouchableOpacity style={{ width: "30%" }}>
+                    <View
+                      style={{ flexDirection: "row", justifyContent: "center" }}
+                    >
+                      <TouchableOpacity
+                        style={{ width: "20%", justifyContent: "center" }}
+                      >
                         <Text>{item}</Text>
                       </TouchableOpacity>
+                      {index === this.state.zIndexList.length - 1 ? (
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            justifyContent: "center",
+                            opacity: 0.2
+                          }}
+                        >
+                          <Text>Bring To Front</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => {
+                            this.handleTestClick([item, "increase"]);
+                          }}
+                          style={{ width: "20%", justifyContent: "center" }}
+                        >
+                          <Text>Bring To Front</Text>
+                        </TouchableOpacity>
+                      )}
+                      {index === 0 ? (
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            justifyContent: "center",
+                            opacity: 0.2
+                          }}
+                        >
+                          <Text>Send To Back</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => {
+                            this.handleTestClick([item, "decrease"]);
+                          }}
+                          style={{ width: "20%", justifyContent: "center" }}
+                        >
+                          <Text>Send To Back</Text>
+                        </TouchableOpacity>
+                      )}
                       <TouchableOpacity
-                        onPress={() => {
-                          this.handleTestClick([item, "increase"]);
-                        }}
-                        style={{ width: "30%" }}
+                        style={{ width: "20%", justifyContent: "center" }}
                       >
-                        <Text>Bring To Front</Text>
+                        <Text
+                          onPress={() => {
+                            let copiedLogo = this.state[item];
+                            if (item.includes("logo")) {
+                              copiedLogo.widthDefault =
+                                copiedLogo.widthDefault *
+                                this.state.logoChangeScalar;
+                              copiedLogo.heightDefault =
+                                copiedLogo.heightDefault *
+                                this.state.logoChangeScalar;
+                            } else {
+                              copiedLogo.fontSize *= this.state.textChangeScalar;
+                            }
+                            console.log(item);
+                            console.log(copiedLogo);
+
+                            this.setState({ [item]: copiedLogo });
+                          }}
+                        >
+                          Inc
+                        </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        onPress={() => {
-                          this.handleTestClick([item, "decrease"]);
-                        }}
-                        style={{ width: "30%" }}
+                        style={{ width: "20%", justifyContent: "center" }}
                       >
-                        <Text>Send To Back</Text>
+                        <Text
+                          onPress={() => {
+                            let copiedLogo = this.state[item];
+                            if (item.includes("logo")) {
+                              copiedLogo.widthDefault =
+                                copiedLogo.widthDefault /
+                                this.state.logoChangeScalar;
+                              copiedLogo.heightDefault =
+                                copiedLogo.heightDefault /
+                                this.state.logoChangeScalar;
+                            } else {
+                              copiedLogo.fontSize /= this.state.textChangeScalar;
+                            }
+                            console.log(item);
+                            console.log(copiedLogo);
+
+                            this.setState({ [item]: copiedLogo });
+                          }}
+                        >
+                          Dec
+                        </Text>
                       </TouchableOpacity>
+
+                      {/* <TouchableOpacity
+                          onPress={() => {
+                            this.handleTestClick([item, "decrease"]);
+                          }}
+                          style={{ width: "20%", justifyContent: "center" }}
+                        >
+                          <Text>Send To Back</Text>
+                        </TouchableOpacity> */}
                     </View>
                   </View>
                 ))}
               </ScrollView>
             </View>
-            <View style={{ width: "100%", height: "10%" }}></View>
+            <View style={{ height: "10%" }}></View>
           </View>
         </View>
       </Modal>
@@ -695,15 +929,18 @@ class Canvas extends React.Component {
           >
             <Icon name="rotate-3d" size={50} />
           </TouchableOpacity>
+          {this.state.editZIndexModal ? this.renderZIndexModal() : null}
+          {this.state.editLogoAndTextSizeModal
+            ? this.renderLogoAndTextSizeModal()
+            : null}
 
           {this.state.zIndexList.length === 0
             ? null
             : this.renderLogosAndText()}
-          {this.state.zIndexList.length === 0
+          {/* {this.state.zIndexList.length === 0
             ? null
-            : this.renderLogosToolbar()}
-          {this.state.zIndexList.length === 0 ? null : this.renderText()}
-          {this.state.zIndexList.length === 0 ? null : this.renderEditAddOns()}
+            : this.renderLogosToolbar()} */}
+          {/* {this.state.zIndexList.length === 0 ? null : this.renderEditAddOns()} */}
         </View>
       </ViewShot>
     );
@@ -789,23 +1026,19 @@ class Canvas extends React.Component {
           height: 200
         }}
       >
-        <TouchableOpacity style={{ height: "10%", width: "100%" }}>
-          <Text style={{ textAlign: "right", marginRight: 10 }}></Text>
-        </TouchableOpacity>
         <View
           style={{
             flexDirection: "row",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            width: "95%",
+            marginLeft: "2.5%"
           }}
         >
           {this.renderGarmentChoice()}
           {this.renderAddOns()}
           {this.renderSaveProject()}
         </View>
-        <TouchableOpacity
-          style={{ height: "10%", width: "100%" }}
-        ></TouchableOpacity>
       </View>
     );
   }
@@ -1077,41 +1310,6 @@ class Canvas extends React.Component {
             margin: 5
           }}
         >
-          {/* <PinchableBox
-            uri={this.state[currentKey].url}
-            height={this.state[currentKey].heightDefault}
-            width={this.state[currentKey].widthDefault}
-            currentKey={currentKey}
-          /> */}
-
-          {/* <PinchGestureHandler
-            ref={this.pinchRef}
-            onGestureEvent={this._onPinchGestureEvent}
-            onHandlerStateChange={this.onPinchHandlerStateChange.bind(
-              this,
-              currentKey
-            )}
-          >
-            <Animated.Image
-              style={{
-                height: this.state[currentKey].heightDefault,
-                width: this.state[currentKey].widthDefault,
-
-                transform: [
-                  { perspective: 200 },
-                  {
-                    scale: this._scale
-                  },
-                  { rotate: this._rotateStr },
-                  { rotateX: this._tiltStr }
-                ]
-              }}
-              source={{
-                uri: this.state[currentKey].url
-              }}
-            />
-          </PinchGestureHandler> */}
-
           <Text
             style={{
               fontFamily: this.state[currentKey].font,
@@ -1148,57 +1346,106 @@ class Canvas extends React.Component {
     console.log("z index list below");
     console.log(this.state.zIndexList);
 
-    return this.state.zIndexList.map((currentKey, index) => (
-      <Draggable
-        onPressIn={({ nativeEvent }) => {
-          console.log("on press");
-          startX = nativeEvent.pageX;
-          startY = nativeEvent.pageY;
+    return this.state.zIndexList.map((currentKey, index) =>
+      !currentKey.includes(frontOrBack) ? null : currentKey.includes("logo") ? (
+        <Draggable
+          onPressIn={({ nativeEvent }) => {
+            console.log("on press");
+            startX = nativeEvent.pageX;
+            startY = nativeEvent.pageY;
 
-          console.log(startX + "," + startY);
-        }}
-        onDragRelease={({ nativeEvent }) => {
-          console.log("on release");
-
-          endX = nativeEvent.pageX;
-          endY = nativeEvent.pageY;
-
-          offsetX = endX - startX;
-          offsetY = endY - startY;
-
-          console.log(endX + "," + endY);
-
-          let logoCopy = this.state[currentKey];
-          logoCopy.offsetX = logoCopy.offsetX + offsetX;
-          logoCopy.offsetY = logoCopy.offsetY + offsetY;
-
-          this.setState({ [currentKey]: logoCopy });
-        }}
-        x={this.state[currentKey].logoPositionX}
-        y={this.state[currentKey].logoPositionY}
-        key={frontOrBack + currentKey}
-      >
-        <View
-          style={{
-            width: this.state[currentKey].widthDefault,
-            height: this.state[currentKey].heightDefault,
-            margin: 5
+            console.log(startX + "," + startY);
           }}
+          onDragRelease={({ nativeEvent }) => {
+            console.log("on release");
+
+            endX = nativeEvent.pageX;
+            endY = nativeEvent.pageY;
+
+            offsetX = endX - startX;
+            offsetY = endY - startY;
+
+            console.log(endX + "," + endY);
+
+            let logoCopy = this.state[currentKey];
+            logoCopy.offsetX = logoCopy.offsetX + offsetX;
+            logoCopy.offsetY = logoCopy.offsetY + offsetY;
+
+            this.setState({ [currentKey]: logoCopy });
+          }}
+          x={this.state[currentKey].logoPositionX}
+          y={this.state[currentKey].logoPositionY}
+          key={frontOrBack + currentKey}
         >
-          <Image
+          <View
             style={{
-              flex: 1,
-              width: undefined,
-              height: undefined
+              width: this.state[currentKey].widthDefault,
+              height: this.state[currentKey].heightDefault,
+              margin: 5
             }}
-            source={{
-              uri: this.state[currentKey].url
+          >
+            <Image
+              style={{
+                flex: 1,
+                width: undefined,
+                height: undefined
+              }}
+              source={{
+                uri: this.state[currentKey].url
+              }}
+              resizeMode="contain"
+            />
+          </View>
+        </Draggable>
+      ) : (
+        <Draggable
+          onPressIn={({ nativeEvent }) => {
+            console.log("on press text");
+            startX = nativeEvent.pageX;
+            startY = nativeEvent.pageY;
+
+            console.log(startX + "," + startY);
+          }}
+          onDragRelease={({ nativeEvent }) => {
+            console.log("on release text");
+
+            endX = nativeEvent.pageX;
+            endY = nativeEvent.pageY;
+
+            offsetX = endX - startX;
+            offsetY = endY - startY;
+
+            console.log(endX + "," + endY);
+
+            let textCopy = this.state[currentKey];
+            textCopy.offsetX = textCopy.offsetX + offsetX;
+            textCopy.offsetY = textCopy.offsetY + offsetY;
+
+            this.setState({ [currentKey]: textCopy });
+          }}
+          x={this.state[currentKey].textPositionX}
+          y={this.state[currentKey].textPositionY}
+          key={frontOrBack + currentKey}
+        >
+          <View
+            style={{
+              margin: 5
             }}
-            resizeMode="contain"
-          />
-        </View>
-      </Draggable>
-    ));
+          >
+            <Text
+              style={{
+                fontFamily: this.state[currentKey].font,
+                fontSize: this.state[currentKey].fontSize,
+                color: this.state[currentKey].color,
+                zIndex: this.state.zIndexList.indexOf(currentKey) + 1
+              }}
+            >
+              {this.state[currentKey].textValue}
+            </Text>
+          </View>
+        </Draggable>
+      )
+    );
   }
   renderLogos() {
     console.log("in render logos");
@@ -1791,13 +2038,16 @@ class Canvas extends React.Component {
         {this.state.showTextDetail ? this.renderTextModal() : null}
         {this.state.showLogoChooseDetail ? this.renderChooseLogoModal() : null}
         {this.state.showLogoUploadDetail ? this.renderUploadLogoModal() : null}
+        <View style={{ height: "10%", width: "100%" }}>
+          {this.state.zIndexList.length === 0 ? null : this.renderEditAddOns()}
+        </View>
         <View style={{ height: "70%", width: "100%" }}>
           {this.renderCanvas()}
         </View>
 
         <View
           style={{
-            height: "30%",
+            height: "20%",
             width: "100%",
             justifyContent: "center",
             alignItems: "center"
