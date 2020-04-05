@@ -249,13 +249,21 @@ class ImagePickerComponent extends React.Component {
     return (
       <TouchableOpacity
         style={{
-          height: 40
+          height: 40,
+          borderWidth: 1,
+          borderRadius: 5,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "lightblue",
+          opacity: 0.7
         }}
         onPress={() => {
           this.uploadImageHandler();
         }}
       >
-        <Text>Choose Image From Camera</Text>
+        <Text style={{ padding: 5, fontWeight: "800" }}>
+          Choose Image From Camera
+        </Text>
       </TouchableOpacity>
     );
   }

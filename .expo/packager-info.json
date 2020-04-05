@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 1212,
-  "expoServerNgrokUrl": "https://vq-asq.anonymous.firebase.exp.direct",
-  "packagerNgrokUrl": "https://packager.vq-asq.anonymous.firebase.exp.direct",
-  "ngrokPid": 1222
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null
 }
