@@ -18,17 +18,40 @@ saveCanvas = async () => {
 
 saveUriToFile = async uriHere => {
   console.log("in save uri to file at canvas");
-  // console.log(this.state.imageUri);
-  // console.log(uriHere);
 
   const asset = await MediaLibrary.createAssetAsync(uriHere);
+
+  MediaLibrary.createAlbumAsync("DesignAShirtCreations", asset)
+    .then(() => {
+      console.log("Album created!");
+    })
+    .catch(error => {
+      console.log("err", error);
+    });
+};
+
+deleteExpoFolder = async emailSent => {
+  console.log("deleting Design a Shirt folder from phone");
+
+  const isDeleted = await MediaLibrary.getAlbumsAsync();
+
+  for (let i = 0; i < isDeleted.length; i++) {
+    if (isDeleted[i].title === "DesignAShirtCreations") {
+      const isAlbumDeleted = await MediaLibrary.deleteAlbumsAsync(
+        isDeleted[i],
+        true
+      );
+    }
+  }
 };
 
 uploadFile = async () => {
   console.log("in upload file at screenshot test");
 
+  console.log(ImagePicker);
+
   let pickerResult = await ImagePicker.launchImageLibraryAsync({
-    allowsEditing: true
+    // allowsEditing: true
     // aspect: [4, 3]
   });
   console.log(pickerResult);
@@ -162,9 +185,10 @@ sendEmail = async imageInformation => {
   const url = imageInformation[0];
 
   const fromEmail = "DesignAShirt@dedteesttest.com";
-  const toEmail1 = "jweinst4@gmail.com";
+  // const toEmail1 = "jweinst4@gmail.com";
+  const toEmail1 = "eric@dedtees.com";
   // const toEmail2 = "theLastAlaskn@gmail.com";
-  // const ccEmail = "jweinst4@gmail.com";
+  const ccEmail = "jweinst4@gmail.com";
   const subject = "You created a design!";
   const details =
     "<html><body><img src='" +
@@ -172,6 +196,12 @@ sendEmail = async imageInformation => {
     "'><div>" +
     canvasState +
     "</div></div></body></html>";
+
+  // cc: [
+  //   {
+  //     email: ccEmail
+  //   }
+  // ],
 
   const apiKey = MAIL_API_KEY;
 
@@ -192,6 +222,11 @@ sendEmail = async imageInformation => {
           to: [
             {
               email: toEmail1
+            }
+          ],
+          cc: [
+            {
+              email: ccEmail
             }
           ],
           subject: subject
@@ -367,5 +402,7 @@ export const screenShotUtility = async canvasState => {
 
   const emailSent = await this.sendEmail(imageInformation);
 
-  return emailSent;
+  const folderRemoved = await this.deleteExpoFolder(emailSent);
+
+  return folderRemoved;
 };

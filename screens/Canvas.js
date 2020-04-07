@@ -9,7 +9,8 @@ import {
   ActivityIndicator,
   Modal,
   Animated,
-  TextInput
+  TextInput,
+  Dimensions
 } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -20,9 +21,6 @@ import ViewShot from "react-native-view-shot";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import ImagePickerComponent from "../components/ImagePickerComponent";
-import PinchableBox from "../components/PinchableBox";
-import { PinchGestureHandler, State } from "react-native-gesture-handler";
-
 import { screenShotUtility } from "../utilities/screenShotUtility";
 
 import { toggleLoading } from "../actions/loading";
@@ -34,7 +32,7 @@ import {
   setCurrentScale
 } from "../actions/items";
 
-let currentVersion = "v6";
+let currentVersion = "v7";
 
 let colors = [
   "black",
@@ -97,6 +95,7 @@ class Canvas extends React.Component {
       zIndexList: [],
       editZIndexModal: false,
       editLogoAndTextSizeModal: false,
+      splitScreenView: false,
       logo1Front: {
         url: "",
         logoPositionX: 0,
@@ -366,81 +365,7 @@ class Canvas extends React.Component {
         fontSize: 0
       }
     };
-
-    /* Pinching */
-    // this._baseScale = new Animated.Value(1);
-    // this._pinchScale = new Animated.Value(1);
-    // this._scale = Animated.multiply(this._baseScale, this._pinchScale);
-    // this._lastScale = 1;
-    // this._onPinchGestureEvent = Animated.event(
-    //   [{ nativeEvent: { scale: this._pinchScale } }],
-    //   { useNativeDriver: true }
-    // );
-
-    // /* Rotation */
-    // this._rotate = new Animated.Value(0);
-    // this._rotateStr = this._rotate.interpolate({
-    //   inputRange: [-100, 100],
-    //   outputRange: ["-100rad", "100rad"]
-    // });
-    // this._lastRotate = 0;
-    // this._onRotateGestureEvent = Animated.event(
-    //   [{ nativeEvent: { rotation: this._rotate } }],
-    //   { useNativeDriver: true }
-    // );
-
-    // /* Tilt */
-    // this._tilt = new Animated.Value(0);
-    // this._tiltStr = this._tilt.interpolate({
-    //   inputRange: [-501, -500, 0, 1],
-    //   outputRange: ["1rad", "1rad", "0rad", "0rad"]
-    // });
-    // this._lastTilt = 0;
-    // this._onTiltGestureEvent = Animated.event(
-    //   [{ nativeEvent: { translationY: this._tilt } }],
-    //   { useNativeDriver: true }
-    // );
-
-    // this.onRotateHandlerStateChange = this.onRotateHandlerStateChange.bind(
-    //   this
-    // );
-    // this.onPinchHandlerStateChange = this.onPinchHandlerStateChange.bind(this);
   }
-
-  // onRotateHandlerStateChange = event => {
-  //   if (event.nativeEvent.oldState === State.ACTIVE) {
-  //     this._lastRotate += event.nativeEvent.rotation;
-  //     this._rotate.setOffset(this._lastRotate);
-  //     this._rotate.setValue(0);
-  //   }
-  // };
-
-  // onPinchHandlerStateChange = (currentKey, event) => {
-  //   // console.log("pinch handler");
-  //   // // console.log(this.state);
-  //   // console.log(event);
-  //   // console.log(currentKey);
-  //   if (event.nativeEvent.oldState === State.ACTIVE) {
-  //     this._lastScale *= event.nativeEvent.scale;
-  //     this._baseScale.setValue(this._lastScale);
-  //     this._pinchScale.setValue(1);
-
-  //     let logoCopyInHandler = this.state[currentKey];
-  //     logoCopyInHandler.scale = 1;
-  //     logoCopyInHandler.widthDefault *= event.nativeEvent.scale;
-  //     logoCopyInHandler.heightDefault *= event.nativeEvent.scale;
-
-  //     this.setState({ [currentKey]: logoCopyInHandler });
-  //   }
-  // };
-
-  // _onTiltGestureStateChange = event => {
-  //   if (event.nativeEvent.oldState === State.ACTIVE) {
-  //     this._lastTilt += event.nativeEvent.translationY;
-  //     this._tilt.setOffset(this._lastTilt);
-  //     this._tilt.setValue(0);
-  //   }
-  // };
 
   async componentDidMount() {
     this.props.toggleLoading(true);
@@ -465,6 +390,7 @@ class Canvas extends React.Component {
 
   saveLogoLocations() {
     console.log("saving logo locations");
+    console.log(this.state.splitScreenView);
 
     for (let i = 0; i < this.state.allLogosFront.length; i++) {
       let currentKey = this.state.allLogosFront[i];
@@ -497,43 +423,14 @@ class Canvas extends React.Component {
   renderEditAddOns() {
     console.log("in render edit add ons");
     return (
-      <View
-        style={{
-          width: "100%",
-          height: "100%",
-          justifyContent: "space-around",
-          alignItems: "center"
+      <TouchableOpacity
+        onPress={() => {
+          this.setState({ editZIndexModal: true });
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 50,
-            height: 100,
-            width: "90%",
-            marginLeft: "5%",
-            justifyContent: "space-around"
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({ editZIndexModal: true });
-            }}
-            style={{
-              borderWidth: 1,
-              borderRadius: 5,
-              height: 50,
-              width: "30%",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <Text>Edit Logo and Text Details</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        <Text style={{ fontSize: 12 }}>Edit Logo/</Text>
+        <Text style={{ fontSize: 12 }}>Text Details</Text>
+      </TouchableOpacity>
     );
   }
 
@@ -888,24 +785,48 @@ class Canvas extends React.Component {
     }
   }
 
-  renderCanvas() {
+  renderCanvas(val) {
     // console.log("at render canvas");
+    // console.log(this.props.items.front);
+    let screenWidth = Dimensions.get("window").width;
+    let screenHeight = Dimensions.get("window").height;
+    // console.log(val);
+
+    let canvasWidth = screenWidth;
+    // let canvasHeight = screenHeight * 1;
+    let canvasHeight = screenHeight * 0.5;
+    // if (this.state.splitScreenView) {
+    //   // canvasHeight = screenHeight * 1;
+    //   canvasHeight = 0.5 * screenHeight;
+    // }
+
     return (
       <ViewShot
-        style={{ height: "100%" }}
+        style={
+          this.state.splitScreenView
+            ? {
+                width: canvasWidth,
+                height: canvasHeight
+              }
+            : {
+                width: canvasWidth,
+                height: canvasHeight,
+                transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }],
+                marginTop: 100
+              }
+        }
         ref="viewShot"
         options={{ format: "jpg", quality: 0.9 }}
       >
         <View
           style={{
-            height: "100%",
-            marginTop: "10%"
+            height: "100%"
           }}
         >
           <Image
             style={{ flex: 1, width: undefined, height: undefined }}
             source={
-              this.props.items.front
+              val
                 ? {
                     uri: this.props.items.shirtUrl
                   }
@@ -915,20 +836,38 @@ class Canvas extends React.Component {
             }
             resizeMode="contain"
           />
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              top: "85%",
-              marginLeft: "5%"
-            }}
-            onPress={() => {
-              this.saveLogoLocations();
-              this.saveTextLocations();
-              this.props.toggleFrontOrBack();
-            }}
-          >
-            <Icon name="rotate-3d" size={50} />
-          </TouchableOpacity>
+
+          {this.state.splitScreenView ? null : (
+            <TouchableOpacity
+              style={{
+                position: "absolute",
+                top: "85%",
+                marginLeft: "15%"
+              }}
+              onPress={() => {
+                this.saveLogoLocations();
+                this.saveTextLocations();
+                this.props.toggleFrontOrBack();
+              }}
+            >
+              <Icon name="rotate-3d" size={50} />
+            </TouchableOpacity>
+          )}
+          {this.state.splitScreenView ? null : this.state.zIndexList.length ===
+            0 ? null : (
+            <TouchableOpacity
+              style={{
+                position: "absolute",
+                top: "65%",
+                marginLeft: "15%"
+              }}
+              onPress={() => {
+                console.log("pressed");
+              }}
+            >
+              {this.renderEditAddOns()}
+            </TouchableOpacity>
+          )}
           {this.state.editZIndexModal ? this.renderZIndexModal() : null}
           {this.state.editLogoAndTextSizeModal
             ? this.renderLogoAndTextSizeModal()
@@ -936,7 +875,7 @@ class Canvas extends React.Component {
 
           {this.state.zIndexList.length === 0
             ? null
-            : this.renderLogosAndText()}
+            : this.renderLogosAndText(val)}
           {/* {this.state.zIndexList.length === 0
             ? null
             : this.renderLogosToolbar()} */}
@@ -994,6 +933,23 @@ class Canvas extends React.Component {
     );
   }
 
+  renderAcceptedBorder() {
+    return (
+      <View>
+        <View
+          style={{
+            position: "absolute",
+            left: 200,
+            width: 50,
+            height: 50,
+            top: -200,
+            backgroundColor: "red"
+          }}
+        ></View>
+      </View>
+    );
+  }
+
   renderSaveProject() {
     return (
       <TouchableOpacity
@@ -1010,8 +966,13 @@ class Canvas extends React.Component {
         onPress={() => {
           this.screenshotHandler();
         }}
+        onPress={() => {
+          this.saveLogoLocations();
+          this.saveTextLocations();
+          this.setState({ splitScreenView: true });
+        }}
       >
-        <Text style={{ textAlign: "center" }}>Save Project</Text>
+        <Text style={{ textAlign: "center" }}>Save Project Preview</Text>
       </TouchableOpacity>
     );
   }
@@ -1255,78 +1216,12 @@ class Canvas extends React.Component {
     this.onPinchHandlerStateChange(event);
   }
 
-  renderText() {
-    let startX = 0;
-    let startY = 0;
-    let endX = 0;
-    let endY = 0;
-    let offsetX = 0;
-    let offsetY = 0;
+  renderLogosAndText(val) {
+    // console.log("in render logos and text");
+    // console.log(val);
 
-    let frontOrBack = "Front";
-
-    if (!this.props.items.front) {
-      frontOrBack = "Back";
-    }
-
-    let newKey = "allText" + frontOrBack;
-    // console.log("new key below");
-    // console.log(newKey);
-    // console.log(this.state[newKey]);
-    // console.log(this.state.text1Front);
-
-    return this.state[newKey].map((currentKey, index) => (
-      <Draggable
-        onPressIn={({ nativeEvent }) => {
-          console.log("on press text");
-          startX = nativeEvent.pageX;
-          startY = nativeEvent.pageY;
-
-          console.log(startX + "," + startY);
-        }}
-        onDragRelease={({ nativeEvent }) => {
-          console.log("on release text");
-
-          endX = nativeEvent.pageX;
-          endY = nativeEvent.pageY;
-
-          offsetX = endX - startX;
-          offsetY = endY - startY;
-
-          console.log(endX + "," + endY);
-
-          let textCopy = this.state[currentKey];
-          textCopy.offsetX = textCopy.offsetX + offsetX;
-          textCopy.offsetY = textCopy.offsetY + offsetY;
-
-          this.setState({ [currentKey]: textCopy });
-        }}
-        x={this.state[currentKey].textPositionX}
-        y={this.state[currentKey].textPositionY}
-        key={frontOrBack + currentKey}
-      >
-        <View
-          style={{
-            margin: 5
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: this.state[currentKey].font,
-              fontSize: this.state[currentKey].fontSize,
-              color: this.state[currentKey].color,
-              zIndex: this.state.zIndexList.indexOf(currentKey) + 1
-            }}
-          >
-            {this.state[currentKey].textValue}
-          </Text>
-        </View>
-      </Draggable>
-    ));
-  }
-
-  renderLogosAndText() {
-    console.log("in render logos and text");
+    // console.log(this.state.splitScreenView);
+    // console.log(this.state.logo1Front);
 
     let startX = 0;
     let startY = 0;
@@ -1337,7 +1232,7 @@ class Canvas extends React.Component {
 
     let frontOrBack = "Front";
 
-    if (!this.props.items.front) {
+    if (!val) {
       frontOrBack = "Back";
     }
 
@@ -1373,16 +1268,32 @@ class Canvas extends React.Component {
 
             this.setState({ [currentKey]: logoCopy });
           }}
-          x={this.state[currentKey].logoPositionX}
-          y={this.state[currentKey].logoPositionY}
+          x={
+            this.state.splitScreenView
+              ? this.state[currentKey].logoPositionX
+              : this.state[currentKey].logoPositionX
+          }
+          y={
+            this.state.splitScreenView
+              ? this.state[currentKey].logoPositionY
+              : this.state[currentKey].logoPositionY
+          }
           key={frontOrBack + currentKey}
         >
           <View
-            style={{
-              width: this.state[currentKey].widthDefault,
-              height: this.state[currentKey].heightDefault,
-              margin: 5
-            }}
+            style={
+              this.state.splitScreenView
+                ? {
+                    width: this.state[currentKey].widthDefault,
+                    height: this.state[currentKey].heightDefault,
+                    margin: 5
+                  }
+                : {
+                    width: this.state[currentKey].widthDefault,
+                    height: this.state[currentKey].heightDefault,
+                    margin: 5
+                  }
+            }
           >
             <Image
               style={{
@@ -1423,206 +1334,39 @@ class Canvas extends React.Component {
 
             this.setState({ [currentKey]: textCopy });
           }}
-          x={this.state[currentKey].textPositionX}
-          y={this.state[currentKey].textPositionY}
+          x={
+            this.state.splitScreenView
+              ? this.state[currentKey].textPositionX
+              : this.state[currentKey].textPositionX
+          }
+          y={
+            this.state.splitScreenView
+              ? this.state[currentKey].textPositionY
+              : this.state[currentKey].textPositionY
+          }
           key={frontOrBack + currentKey}
         >
-          <View
-            style={{
-              margin: 5
-            }}
+          <Text
+            style={
+              this.state.splitScreenView
+                ? {
+                    fontFamily: this.state[currentKey].font,
+                    fontSize: this.state[currentKey].fontSize,
+                    color: this.state[currentKey].color,
+                    zIndex: this.state.zIndexList.indexOf(currentKey) + 1
+                  }
+                : {
+                    fontFamily: this.state[currentKey].font,
+                    fontSize: this.state[currentKey].fontSize,
+                    color: this.state[currentKey].color,
+                    zIndex: this.state.zIndexList.indexOf(currentKey) + 1
+                  }
+            }
           >
-            <Text
-              style={{
-                fontFamily: this.state[currentKey].font,
-                fontSize: this.state[currentKey].fontSize,
-                color: this.state[currentKey].color,
-                zIndex: this.state.zIndexList.indexOf(currentKey) + 1
-              }}
-            >
-              {this.state[currentKey].textValue}
-            </Text>
-          </View>
+            {this.state[currentKey].textValue}
+          </Text>
         </Draggable>
       )
-    );
-  }
-  renderLogos() {
-    console.log("in render logos");
-
-    let startX = 0;
-    let startY = 0;
-    let endX = 0;
-    let endY = 0;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    let frontOrBack = "Front";
-
-    if (!this.props.items.front) {
-      frontOrBack = "Back";
-    }
-
-    let newKey = "allLogos" + frontOrBack;
-    console.log(newKey);
-    console.log(this.state[newKey]);
-
-    return this.state[newKey].map((currentKey, index) => (
-      <Draggable
-        style={{
-          zIndex: currentKey === "logo1Front" ? 5 : 1
-        }}
-        onPressIn={({ nativeEvent }) => {
-          console.log("on press");
-          startX = nativeEvent.pageX;
-          startY = nativeEvent.pageY;
-
-          console.log(startX + "," + startY);
-        }}
-        onDragRelease={({ nativeEvent }) => {
-          console.log("on release");
-
-          endX = nativeEvent.pageX;
-          endY = nativeEvent.pageY;
-
-          offsetX = endX - startX;
-          offsetY = endY - startY;
-
-          console.log(endX + "," + endY);
-
-          let logoCopy = this.state[currentKey];
-          logoCopy.offsetX = logoCopy.offsetX + offsetX;
-          logoCopy.offsetY = logoCopy.offsetY + offsetY;
-
-          this.setState({ [currentKey]: logoCopy });
-        }}
-        x={this.state[currentKey].logoPositionX}
-        y={this.state[currentKey].logoPositionY}
-        key={frontOrBack + currentKey}
-      >
-        <View
-          style={{
-            width: this.state[currentKey].widthDefault,
-            height: this.state[currentKey].heightDefault,
-            margin: 5,
-            zIndex: currentKey === "logo1Front" ? 5 : 1
-          }}
-        >
-          {/* <PinchableBox
-            uri={this.state[currentKey].url}
-            height={this.state[currentKey].heightDefault}
-            width={this.state[currentKey].widthDefault}
-            currentKey={currentKey}
-          /> */}
-
-          {/* <PinchGestureHandler
-            ref={this.pinchRef}
-            onGestureEvent={this._onPinchGestureEvent}
-            onHandlerStateChange={this.onPinchHandlerStateChange.bind(
-              this,
-              currentKey
-            )}
-          >
-            <Animated.Image
-              style={{
-                height: this.state[currentKey].heightDefault,
-                width: this.state[currentKey].widthDefault,
-
-                transform: [
-                  { perspective: 200 },
-                  {
-                    scale: this._scale
-                  },
-                  { rotate: this._rotateStr },
-                  { rotateX: this._tiltStr }
-                ]
-              }}
-              source={{
-                uri: this.state[currentKey].url
-              }}
-            />
-          </PinchGestureHandler> */}
-          <Image
-            style={{
-              flex: 1,
-              width: undefined,
-              height: undefined,
-              zIndex: currentKey === "logo1Front" ? 5 : 1
-            }}
-            source={{
-              uri: this.state[currentKey].url
-            }}
-            resizeMode="contain"
-          />
-        </View>
-      </Draggable>
-    ));
-  }
-
-  renderLogosToolbar() {
-    // console.log("render logos toolbar");
-
-    let frontOrBack = "Front";
-
-    if (!this.props.items.front) {
-      frontOrBack = "Back";
-    }
-
-    let newKey = "allLogos" + frontOrBack;
-
-    const userLogos = this.state[newKey];
-
-    return (
-      <View
-        style={{
-          position: "absolute",
-          top: 190,
-          right: 20,
-          width: 70
-        }}
-      >
-        <View>
-          {userLogos.map((currentKey, index) => (
-            <View key={currentKey}>
-              <Text>{currentKey}</Text>
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ width: "50%" }}>
-                  <Text
-                    onPress={() => {
-                      let copiedLogo = this.state[currentKey];
-
-                      copiedLogo.widthDefault =
-                        copiedLogo.widthDefault * this.state.logoChangeScalar;
-                      copiedLogo.heightDefault =
-                        copiedLogo.heightDefault * this.state.logoChangeScalar;
-
-                      this.setState({ [currentKey]: copiedLogo });
-                    }}
-                  >
-                    Inc
-                  </Text>
-                </View>
-                <View style={{ width: "50%" }}>
-                  <Text
-                    onPress={() => {
-                      let copiedLogo = this.state[currentKey];
-
-                      copiedLogo.widthDefault =
-                        copiedLogo.widthDefault / this.state.logoChangeScalar;
-                      copiedLogo.heightDefault =
-                        copiedLogo.heightDefault / this.state.logoChangeScalar;
-
-                      this.setState({ [currentKey]: copiedLogo });
-                    }}
-                  >
-                    Dec
-                  </Text>
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
-      </View>
     );
   }
 
@@ -2032,29 +1776,83 @@ class Canvas extends React.Component {
 
   render() {
     return (
-      <View>
-        {this.props.loading ? this.renderLoadingModal() : null}
-
-        {this.state.showTextDetail ? this.renderTextModal() : null}
+      <View
+        style={{
+          // backgroundColor: "red",
+          height: "100%",
+          width: "100%"
+        }}
+      >
+        {/* {this.props.loading ? this.renderLoadingModal() : null}
+        // {this.state.showTextDetail ? this.renderTextModal() : null}
         {this.state.showLogoChooseDetail ? this.renderChooseLogoModal() : null}
+        {this.state.showLogoUploadDetail ? this.renderUploadLogoModal() : null} */}
+        {/* {this.state.splitScreenView ? null : this.state.zIndexList.length ===
+          0 ? null : (
+          <View
+            style={{
+              position: "absolute",
+              top: "5%",
+              width: "100%",
+              backgroundColor: "green",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+            onPress={() => {
+              this.setState({ editZIndexModal: true });
+            }}
+          >
+            {this.renderEditAddOns()}
+          </View>
+        )} */}
         {this.state.showLogoUploadDetail ? this.renderUploadLogoModal() : null}
-        <View style={{ height: "10%", width: "100%" }}>
-          {this.state.zIndexList.length === 0 ? null : this.renderEditAddOns()}
-        </View>
-        <View style={{ height: "70%", width: "100%" }}>
-          {this.renderCanvas()}
-        </View>
+        {this.state.showLogoChooseDetail ? this.renderChooseLogoModal() : null}
+        {this.state.showTextDetail ? this.renderTextModal() : null}
 
-        <View
-          style={{
-            height: "20%",
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          {this.renderToolbar()}
-        </View>
+        {!this.state.splitScreenView
+          ? this.props.items.front
+            ? this.renderCanvas(true)
+            : this.renderCanvas(false)
+          : null}
+        {/* {this.state.splitScreenView ? null : this.renderAcceptedBorder()} */}
+        {this.state.splitScreenView ? this.renderCanvas(true) : null}
+        {this.state.splitScreenView ? this.renderCanvas(false) : null}
+        {this.state.splitScreenView ? (
+          <View>
+            <View style={{ position: "absolute", bottom: 100, right: 20 }}>
+              <Text
+                onPress={() => {
+                  this.screenshotHandler();
+                }}
+              >
+                Save Final
+              </Text>
+            </View>
+
+            <View style={{ position: "absolute", bottom: 80, right: 20 }}>
+              <Text
+                onPress={() => {
+                  this.setState({ splitScreenView: false });
+                }}
+              >
+                Go Back
+              </Text>
+            </View>
+          </View>
+        ) : null}
+        {this.state.splitScreenView ? null : (
+          <View
+            style={{
+              position: "absolute",
+              bottom: 0,
+              height: 200,
+              width: "100%"
+              // backgroundColor: "green"
+            }}
+          >
+            {this.renderToolbar()}
+          </View>
+        )}
       </View>
     );
   }
