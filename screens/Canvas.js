@@ -410,6 +410,18 @@ class Canvas extends React.Component {
         onPress={() => {
           this.setState({ editZIndexModal: true });
         }}
+        style={{
+          width: "30%",
+          marginHorizontal: 5,
+          borderWidth: 2,
+          borderRadius: 1,
+          borderColor: "black",
+          height: 100,
+          justifyContent: "center",
+          alignItems: "center",
+          position: "absolute",
+          bottom: 1
+        }}
       >
         <Text style={{ fontSize: 12 }}>Edit Logo/</Text>
         <Text style={{ fontSize: 12 }}>Text Details</Text>
@@ -794,7 +806,7 @@ class Canvas extends React.Component {
             }
             resizeMode="contain"
           />
-          <Draggable
+          {/* <Draggable
             style={{ position: "absolute", backgroundColor: "red" }}
             x={150}
             y={150}
@@ -829,7 +841,7 @@ class Canvas extends React.Component {
             <View
               style={{ height: 200, width: 3, backgroundColor: "red" }}
             ></View>
-          </Draggable>
+          </Draggable> */}
           {this.state.splitScreenView ? null : (
             <TouchableOpacity
               style={{
@@ -846,21 +858,6 @@ class Canvas extends React.Component {
               <Icon name="rotate-3d" size={50} />
             </TouchableOpacity>
           )}
-          {this.state.splitScreenView ? null : this.state.zIndexList.length ===
-            0 ? null : (
-            <TouchableOpacity
-              style={{
-                position: "absolute",
-                top: "65%",
-                marginLeft: "15%"
-              }}
-              onPress={() => {
-                console.log("pressed");
-              }}
-            >
-              {this.renderEditAddOns()}
-            </TouchableOpacity>
-          )}
           {this.state.editZIndexModal ? this.renderZIndexModal() : null}
           {this.state.editLogoAndTextSizeModal
             ? this.renderLogoAndTextSizeModal()
@@ -868,10 +865,6 @@ class Canvas extends React.Component {
           {this.state.zIndexList.length === 0
             ? null
             : this.renderLogosAndText(val)}
-          {/* {this.state.zIndexList.length === 0	
-            ? null	
-            : this.renderLogosToolbar()} */}
-          {/* {this.state.zIndexList.length === 0 ? null : this.renderEditAddOns()} */}
         </View>
       </ViewShot>
     );
@@ -922,22 +915,7 @@ class Canvas extends React.Component {
       </TouchableOpacity>
     );
   }
-  renderAcceptedBorder() {
-    return (
-      <View>
-        <View
-          style={{
-            position: "absolute",
-            left: 200,
-            width: 50,
-            height: 50,
-            top: -200,
-            backgroundColor: "red"
-          }}
-        ></View>
-      </View>
-    );
-  }
+
   renderSaveProject() {
     return (
       <TouchableOpacity
@@ -1165,6 +1143,17 @@ class Canvas extends React.Component {
   renderToolbar() {
     return (
       <View>
+        <View
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "absolute",
+            marginTop: 30
+          }}
+        >
+          {this.state.zIndexList.length === 0 ? null : this.renderEditAddOns()}
+        </View>
         {this.state.showDetail
           ? this.renderDetailOptions()
           : this.renderNonDetailOptions()}
@@ -1190,10 +1179,10 @@ class Canvas extends React.Component {
     this.onPinchHandlerStateChange(event);
   }
   renderLogosAndText(val) {
-    console.log("in render logos and text");
+    // console.log("in render logos and text");
     // console.log(val);
     // console.log(this.state.splitScreenView);
-    console.log(this.state.logo1Front);
+    // console.log(this.state.logo1Front);
     let startX = 0;
     let startY = 0;
     let endX = 0;
@@ -1205,8 +1194,8 @@ class Canvas extends React.Component {
       frontOrBack = "Back";
     }
     let newKey = "allLogos" + frontOrBack;
-    console.log("z index list below");
-    console.log(this.state.zIndexList);
+    // console.log("z index list below");
+    // console.log(this.state.zIndexList);
     return this.state.zIndexList.map((currentKey, index) =>
       !currentKey.includes(frontOrBack) ? null : currentKey.includes("logo") ? (
         <Draggable
@@ -1737,28 +1726,8 @@ class Canvas extends React.Component {
           width: "100%"
         }}
       >
-        {/* {this.props.loading ? this.renderLoadingModal() : null}	
-        // {this.state.showTextDetail ? this.renderTextModal() : null}	
-        {this.state.showLogoChooseDetail ? this.renderChooseLogoModal() : null}	
-        {this.state.showLogoUploadDetail ? this.renderUploadLogoModal() : null} */}
-        {/* {this.state.splitScreenView ? null : this.state.zIndexList.length ===	
-          0 ? null : (	
-          <View	
-            style={{	
-              position: "absolute",	
-              top: "5%",	
-              width: "100%",	
-              backgroundColor: "green",	
-              justifyContent: "center",	
-              alignItems: "center"	
-            }}	
-            onPress={() => {	
-              this.setState({ editZIndexModal: true });	
-            }}	
-          >	
-            {this.renderEditAddOns()}	
-          </View>	
-        )} */}
+        {this.props.loading ? this.renderLoadingModal() : null}
+
         {this.state.showLogoUploadDetail ? this.renderUploadLogoModal() : null}
         {this.state.showLogoChooseDetail ? this.renderChooseLogoModal() : null}
         {this.state.showTextDetail ? this.renderTextModal() : null}
@@ -1767,7 +1736,7 @@ class Canvas extends React.Component {
             ? this.renderCanvas(true)
             : this.renderCanvas(false)
           : null}
-        {/* {this.state.splitScreenView ? null : this.renderAcceptedBorder()} */}
+
         {this.state.splitScreenView ? this.renderCanvas(true) : null}
         {this.state.splitScreenView ? this.renderCanvas(false) : null}
         {this.state.splitScreenView ? (
