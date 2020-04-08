@@ -14,15 +14,12 @@ import {
 } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-
 import * as Permissions from "expo-permissions";
 import Draggable from "react-native-draggable";
 import ViewShot from "react-native-view-shot";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
 import ImagePickerComponent from "../components/ImagePickerComponent";
 import { screenShotUtility } from "../utilities/screenShotUtility";
-
 import { toggleLoading } from "../actions/loading";
 import { login, getLogos } from "../actions/user";
 import {
@@ -31,9 +28,7 @@ import {
   toggleFrontOrBack,
   setCurrentScale
 } from "../actions/items";
-
 let currentVersion = "v7";
-
 let colors = [
   "black",
   "red",
@@ -45,7 +40,6 @@ let colors = [
   "yellow",
   "white"
 ];
-
 let defaultTextOptions = [
   "Unique",
   "Roboto-Regular",
@@ -70,7 +64,6 @@ let defaultTextOptions = [
   "Raleway-Regular",
   "Rubik-Regular"
 ];
-
 class Canvas extends React.Component {
   panRef = React.createRef();
   rotationRef = React.createRef();
@@ -366,7 +359,6 @@ class Canvas extends React.Component {
       }
     };
   }
-
   async componentDidMount() {
     this.props.toggleLoading(true);
     await Permissions.askAsync(Permissions.CAMERA);
@@ -375,27 +367,22 @@ class Canvas extends React.Component {
     await this.props.getLogos();
     this.props.toggleLoading(false);
   }
-
   screenshotHandler = async () => {
     this.props.toggleLoading(true);
     let responseTest = await screenShotUtility(this.state);
     const emptyRequest = await responseTest;
     this.toggleLoadingFunction(emptyRequest);
   };
-
   toggleLoadingFunction(emptyRequest) {
     console.log("in toggle loading function end at canvas");
     this.props.toggleLoading(false);
   }
-
   saveLogoLocations() {
     console.log("saving logo locations");
     console.log(this.state.splitScreenView);
-
     for (let i = 0; i < this.state.allLogosFront.length; i++) {
       let currentKey = this.state.allLogosFront[i];
       let copiedLogoState = this.state[currentKey];
-
       copiedLogoState.logoPositionX =
         copiedLogoState.logoPositionX + copiedLogoState.offsetX;
       copiedLogoState.logoPositionY =
@@ -404,22 +391,18 @@ class Canvas extends React.Component {
       copiedLogoState.offsetY = 0;
       this.setState({ [currentKey]: copiedLogoState });
     }
-
     for (let i = 0; i < this.state.allLogosBack.length; i++) {
       let currentKey = this.state.allLogosBack[i];
       let copiedLogoState = this.state[currentKey];
-
       copiedLogoState.logoPositionX =
         copiedLogoState.logoPositionX + copiedLogoState.offsetX;
       copiedLogoState.logoPositionY =
         copiedLogoState.logoPositionY + copiedLogoState.offsetY;
       copiedLogoState.offsetX = 0;
       copiedLogoState.offsetY = 0;
-
       this.setState({ [currentKey]: copiedLogoState });
     }
   }
-
   renderEditAddOns() {
     console.log("in render edit add ons");
     return (
@@ -433,7 +416,6 @@ class Canvas extends React.Component {
       </TouchableOpacity>
     );
   }
-
   handleTestClick(item) {
     console.log("handle test click");
     console.log(item);
@@ -443,32 +425,25 @@ class Canvas extends React.Component {
     let action = item[1];
     let zIndexCopy = this.state.zIndexList;
     let currentKeyZIndex = zIndexCopy.indexOf(currentKey);
-
     console.log("current Key z index below");
     console.log(currentKeyZIndex);
-
     if (action === "increase") {
       let itemToSwitchZIndex = currentKeyZIndex + 1;
       let switchedItem = zIndexCopy[itemToSwitchZIndex];
-
       zIndexCopy[itemToSwitchZIndex] = currentKey;
       zIndexCopy[currentKeyZIndex] = switchedItem;
     } else {
       let itemToSwitchZIndex = currentKeyZIndex - 1;
       let switchedItem = zIndexCopy[itemToSwitchZIndex];
-
       zIndexCopy[itemToSwitchZIndex] = currentKey;
       zIndexCopy[currentKeyZIndex] = switchedItem;
     }
     console.log("copy below");
     console.log(zIndexCopy);
-
     this.setState({ zIndexList: zIndexCopy });
   }
-
   renderLogoAndTextSizeModal() {
     console.log("in logo and text size modal");
-
     return (
       <Modal
         style={{
@@ -546,7 +521,6 @@ class Canvas extends React.Component {
                           }
                           console.log(item);
                           console.log(copiedLogo);
-
                           this.setState({ [item]: copiedLogo });
                         }}
                       >
@@ -569,7 +543,6 @@ class Canvas extends React.Component {
                           }
                           console.log(item);
                           console.log(copiedLogo);
-
                           this.setState({ [item]: copiedLogo });
                         }}
                       >
@@ -586,11 +559,9 @@ class Canvas extends React.Component {
       </Modal>
     );
   }
-
   renderZIndexModal() {
     console.log("in render z index modal");
     console.log(this.state.zIndexList);
-
     return (
       <Modal
         style={{
@@ -700,7 +671,6 @@ class Canvas extends React.Component {
                             }
                             console.log(item);
                             console.log(copiedLogo);
-
                             this.setState({ [item]: copiedLogo });
                           }}
                         >
@@ -725,21 +695,19 @@ class Canvas extends React.Component {
                             }
                             console.log(item);
                             console.log(copiedLogo);
-
                             this.setState({ [item]: copiedLogo });
                           }}
                         >
                           Dec
                         </Text>
                       </TouchableOpacity>
-
-                      {/* <TouchableOpacity
-                          onPress={() => {
-                            this.handleTestClick([item, "decrease"]);
-                          }}
-                          style={{ width: "20%", justifyContent: "center" }}
-                        >
-                          <Text>Send To Back</Text>
+                      {/* <TouchableOpacity	
+                          onPress={() => {	
+                            this.handleTestClick([item, "decrease"]);	
+                          }}	
+                          style={{ width: "20%", justifyContent: "center" }}	
+                        >	
+                          <Text>Send To Back</Text>	
                         </TouchableOpacity> */}
                     </View>
                   </View>
@@ -752,46 +720,37 @@ class Canvas extends React.Component {
       </Modal>
     );
   }
-
   saveTextLocations() {
     console.log("saving text locations");
-
     for (let i = 0; i < this.state.allTextFront.length; i++) {
       let currentKey = this.state.allTextFront[i];
       let copiedTextState = this.state[currentKey];
-
       copiedTextState.textPositionX =
         copiedTextState.textPositionX + copiedTextState.offsetX;
       copiedTextState.textPositionY =
         copiedTextState.textPositionY + copiedTextState.offsetY;
       copiedTextState.offsetX = 0;
       copiedTextState.offsetY = 0;
-
       this.setState({ [currentKey]: copiedTextState });
     }
-
     for (let i = 0; i < this.state.allTextBack.length; i++) {
       let currentKey = this.state.allTextBack[i];
       let copiedTextState = this.state[currentKey];
-
       copiedTextState.textPositionX =
         copiedTextState.textPositionX + copiedTextState.offsetX;
       copiedTextState.textPositionY =
         copiedTextState.textPositionY + copiedTextState.offsetY;
       copiedTextState.offsetX = 0;
       copiedTextState.offsetY = 0;
-
       this.setState({ [currentKey]: copiedTextState });
     }
   }
-
   renderCanvas(val) {
     // console.log("at render canvas");
     // console.log(this.props.items.front);
     let screenWidth = Dimensions.get("window").width;
     let screenHeight = Dimensions.get("window").height;
     // console.log(val);
-
     let canvasWidth = screenWidth;
     // let canvasHeight = screenHeight * 1;
     let canvasHeight = screenHeight * 0.5;
@@ -799,7 +758,6 @@ class Canvas extends React.Component {
     //   // canvasHeight = screenHeight * 1;
     //   canvasHeight = 0.5 * screenHeight;
     // }
-
     return (
       <ViewShot
         style={
@@ -836,7 +794,42 @@ class Canvas extends React.Component {
             }
             resizeMode="contain"
           />
-
+          <Draggable
+            style={{ position: "absolute", backgroundColor: "red" }}
+            x={150}
+            y={150}
+          >
+            <View
+              style={{ height: 200, width: 3, backgroundColor: "red" }}
+            ></View>
+          </Draggable>
+          <Draggable
+            style={{ position: "absolute", backgroundColor: "red" }}
+            x={150}
+            y={150}
+          >
+            <View
+              style={{ height: 3, width: 120, backgroundColor: "red" }}
+            ></View>
+          </Draggable>
+          <Draggable
+            style={{ position: "absolute", backgroundColor: "red" }}
+            x={150}
+            y={350}
+          >
+            <View
+              style={{ height: 3, width: 120, backgroundColor: "red" }}
+            ></View>
+          </Draggable>
+          <Draggable
+            style={{ position: "absolute", backgroundColor: "red" }}
+            x={270}
+            y={150}
+          >
+            <View
+              style={{ height: 200, width: 3, backgroundColor: "red" }}
+            ></View>
+          </Draggable>
           {this.state.splitScreenView ? null : (
             <TouchableOpacity
               style={{
@@ -872,19 +865,17 @@ class Canvas extends React.Component {
           {this.state.editLogoAndTextSizeModal
             ? this.renderLogoAndTextSizeModal()
             : null}
-
           {this.state.zIndexList.length === 0
             ? null
             : this.renderLogosAndText(val)}
-          {/* {this.state.zIndexList.length === 0
-            ? null
+          {/* {this.state.zIndexList.length === 0	
+            ? null	
             : this.renderLogosToolbar()} */}
           {/* {this.state.zIndexList.length === 0 ? null : this.renderEditAddOns()} */}
         </View>
       </ViewShot>
     );
   }
-
   renderGarmentChoice() {
     return (
       <TouchableOpacity
@@ -909,7 +900,6 @@ class Canvas extends React.Component {
       </TouchableOpacity>
     );
   }
-
   renderAddOns() {
     return (
       <TouchableOpacity
@@ -932,7 +922,6 @@ class Canvas extends React.Component {
       </TouchableOpacity>
     );
   }
-
   renderAcceptedBorder() {
     return (
       <View>
@@ -949,7 +938,6 @@ class Canvas extends React.Component {
       </View>
     );
   }
-
   renderSaveProject() {
     return (
       <TouchableOpacity
@@ -976,7 +964,6 @@ class Canvas extends React.Component {
       </TouchableOpacity>
     );
   }
-
   renderNonDetailOptions() {
     return (
       <View
@@ -1003,7 +990,6 @@ class Canvas extends React.Component {
       </View>
     );
   }
-
   renderAddOnDetail() {
     return (
       <View
@@ -1059,7 +1045,6 @@ class Canvas extends React.Component {
           >
             <Text style={{ textAlign: "center" }}>Upload Logo</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={{
               width: "30%",
@@ -1077,7 +1062,6 @@ class Canvas extends React.Component {
           >
             <Text style={{ textAlign: "center" }}>Choose Logo</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={{
               width: "30%",
@@ -1105,7 +1089,6 @@ class Canvas extends React.Component {
       </View>
     );
   }
-
   renderSwatchDetail() {
     return (
       <View
@@ -1171,7 +1154,6 @@ class Canvas extends React.Component {
       </View>
     );
   }
-
   renderDetailOptions() {
     // console.log("in detail options");
     if (this.state.detailType === "garment") {
@@ -1180,7 +1162,6 @@ class Canvas extends React.Component {
       return this.renderAddOnDetail();
     }
   }
-
   renderToolbar() {
     return (
       <View>
@@ -1190,82 +1171,81 @@ class Canvas extends React.Component {
       </View>
     );
   }
-
   saveScaleInformation(information) {
     console.log("in remember scale at canvas");
     // console.log(information);
-
     // let currentKey = information[0];
     // let scale = information[1];
-
     // console.log(currentKey);
     // console.log(scale);
     console.log(this.state);
-
     // let logoCopyForScale = this.state[currentKey];
     // logoCopyForScale.widthDefault *= scale;
     // logoCopyForScale.heightDefault *= scale;
     // console.log(logoCopyForScale);
-
     // this.setState({ [currentKey]: logoCopyForScale });
   }
-
   onPinchHandler(currentKey) {
     console.log("on pinch handler canvas");
-
     this.onPinchHandlerStateChange(event);
   }
-
   renderLogosAndText(val) {
-    // console.log("in render logos and text");
+    console.log("in render logos and text");
     // console.log(val);
-
     // console.log(this.state.splitScreenView);
-    // console.log(this.state.logo1Front);
-
+    console.log(this.state.logo1Front);
     let startX = 0;
     let startY = 0;
     let endX = 0;
     let endY = 0;
     let offsetX = 0;
     let offsetY = 0;
-
     let frontOrBack = "Front";
-
     if (!val) {
       frontOrBack = "Back";
     }
-
     let newKey = "allLogos" + frontOrBack;
-
     console.log("z index list below");
     console.log(this.state.zIndexList);
-
     return this.state.zIndexList.map((currentKey, index) =>
       !currentKey.includes(frontOrBack) ? null : currentKey.includes("logo") ? (
         <Draggable
           onPressIn={({ nativeEvent }) => {
-            console.log("on press");
+            // console.log("on press");
             startX = nativeEvent.pageX;
             startY = nativeEvent.pageY;
-
             console.log(startX + "," + startY);
+            // console.log(nativeEvent);
           }}
           onDragRelease={({ nativeEvent }) => {
             console.log("on release");
-
             endX = nativeEvent.pageX;
             endY = nativeEvent.pageY;
-
             offsetX = endX - startX;
             offsetY = endY - startY;
 
-            console.log(endX + "," + endY);
+            let didCrossBoundaryLeft =
+              nativeEvent.pageX - nativeEvent.locationX;
+            let didCrossBoundaryRight =
+              didCrossBoundaryLeft + this.state[currentKey].widthDefault;
+            let didCrossBoundaryTop = nativeEvent.pageY - nativeEvent.locationY;
+            let didCrossBoundaryBottom =
+              didCrossBoundaryTop + this.state[currentKey].heightDefault;
+            // console.log(endX + "," + endY);
+            console.log(nativeEvent);
+            console.log("boundary left");
+            console.log(didCrossBoundaryLeft);
+            console.log("boundary right");
+            console.log(didCrossBoundaryRight);
+            console.log("boundary top");
+            console.log(didCrossBoundaryTop);
+            console.log("boundary bottom");
+            console.log(didCrossBoundaryBottom);
 
+            // console.log(endX + "," + endY);
             let logoCopy = this.state[currentKey];
             logoCopy.offsetX = logoCopy.offsetX + offsetX;
             logoCopy.offsetY = logoCopy.offsetY + offsetY;
-
             this.setState({ [currentKey]: logoCopy });
           }}
           x={
@@ -1314,24 +1294,18 @@ class Canvas extends React.Component {
             console.log("on press text");
             startX = nativeEvent.pageX;
             startY = nativeEvent.pageY;
-
             console.log(startX + "," + startY);
           }}
           onDragRelease={({ nativeEvent }) => {
             console.log("on release text");
-
             endX = nativeEvent.pageX;
             endY = nativeEvent.pageY;
-
             offsetX = endX - startX;
             offsetY = endY - startY;
-
             console.log(endX + "," + endY);
-
             let textCopy = this.state[currentKey];
             textCopy.offsetX = textCopy.offsetX + offsetX;
             textCopy.offsetY = textCopy.offsetY + offsetY;
-
             this.setState({ [currentKey]: textCopy });
           }}
           x={
@@ -1369,20 +1343,15 @@ class Canvas extends React.Component {
       )
     );
   }
-
   chooseLogo(item) {
     console.log("choose logo at canvas");
-
     let frontOrBack = "Front";
-
     if (!this.props.items.front) {
       frontOrBack = "Back";
     }
-
     let newKeyAll = "allLogos" + frontOrBack;
     let newKeyAllState = this.state[newKeyAll];
     let currentKey = "";
-
     if (newKeyAllState.indexOf("logo1" + frontOrBack) === -1) {
       currentKey = "logo1" + frontOrBack;
     } else if (newKeyAllState.indexOf("logo2" + frontOrBack) === -1) {
@@ -1397,7 +1366,6 @@ class Canvas extends React.Component {
       currentKey = "logo6" + frontOrBack;
     } else {
     }
-
     this.setState({
       [currentKey]: {
         url: item[0].url,
@@ -1417,20 +1385,15 @@ class Canvas extends React.Component {
     });
     this.setState({ zIndexList: [...this.state.zIndexList, currentKey] });
   }
-
   chooseText(item) {
     console.log("choose text at canvas");
-
     let frontOrBack = "Front";
-
     if (!this.props.items.front) {
       frontOrBack = "Back";
     }
-
     let newKeyAll = "allText" + frontOrBack;
     let newKeyAllState = this.state[newKeyAll];
     let currentKey = "";
-
     if (newKeyAllState.indexOf("text1" + frontOrBack) === -1) {
       currentKey = "text1" + frontOrBack;
     } else if (newKeyAllState.indexOf("text2" + frontOrBack) === -1) {
@@ -1445,7 +1408,6 @@ class Canvas extends React.Component {
       currentKey = "text6" + frontOrBack;
     } else {
     }
-
     this.setState({
       [currentKey]: {
         font: item,
@@ -1468,7 +1430,6 @@ class Canvas extends React.Component {
     });
     this.setState({ zIndexList: [...this.state.zIndexList, currentKey] });
   }
-
   renderZIndexChooser() {
     console.log("in render z index chooser");
     console.log(this.state.zIndexList);
@@ -1492,7 +1453,6 @@ class Canvas extends React.Component {
       </View>
     );
   }
-
   renderLoadingModal() {
     return (
       <Modal
@@ -1515,7 +1475,6 @@ class Canvas extends React.Component {
       </Modal>
     );
   }
-
   renderTextModal() {
     return (
       <Modal
@@ -1637,16 +1596,13 @@ class Canvas extends React.Component {
       </Modal>
     );
   }
-
   renderChooseLogoModal() {
     let allLogos = [];
     console.log("in render choose logo modal");
-
     if (!this.props.user.logos) {
     } else {
       allLogos = Object.keys(this.props.user.logos);
     }
-
     return (
       <Modal
         style={{
@@ -1719,7 +1675,6 @@ class Canvas extends React.Component {
       </Modal>
     );
   }
-
   renderUploadLogoModal() {
     console.log("in upload logo choose modal");
     return (
@@ -1773,7 +1728,6 @@ class Canvas extends React.Component {
       </Modal>
     );
   }
-
   render() {
     return (
       <View
@@ -1783,32 +1737,31 @@ class Canvas extends React.Component {
           width: "100%"
         }}
       >
-        {/* {this.props.loading ? this.renderLoadingModal() : null}
-        // {this.state.showTextDetail ? this.renderTextModal() : null}
-        {this.state.showLogoChooseDetail ? this.renderChooseLogoModal() : null}
+        {/* {this.props.loading ? this.renderLoadingModal() : null}	
+        // {this.state.showTextDetail ? this.renderTextModal() : null}	
+        {this.state.showLogoChooseDetail ? this.renderChooseLogoModal() : null}	
         {this.state.showLogoUploadDetail ? this.renderUploadLogoModal() : null} */}
-        {/* {this.state.splitScreenView ? null : this.state.zIndexList.length ===
-          0 ? null : (
-          <View
-            style={{
-              position: "absolute",
-              top: "5%",
-              width: "100%",
-              backgroundColor: "green",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-            onPress={() => {
-              this.setState({ editZIndexModal: true });
-            }}
-          >
-            {this.renderEditAddOns()}
-          </View>
+        {/* {this.state.splitScreenView ? null : this.state.zIndexList.length ===	
+          0 ? null : (	
+          <View	
+            style={{	
+              position: "absolute",	
+              top: "5%",	
+              width: "100%",	
+              backgroundColor: "green",	
+              justifyContent: "center",	
+              alignItems: "center"	
+            }}	
+            onPress={() => {	
+              this.setState({ editZIndexModal: true });	
+            }}	
+          >	
+            {this.renderEditAddOns()}	
+          </View>	
         )} */}
         {this.state.showLogoUploadDetail ? this.renderUploadLogoModal() : null}
         {this.state.showLogoChooseDetail ? this.renderChooseLogoModal() : null}
         {this.state.showTextDetail ? this.renderTextModal() : null}
-
         {!this.state.splitScreenView
           ? this.props.items.front
             ? this.renderCanvas(true)
@@ -1828,7 +1781,6 @@ class Canvas extends React.Component {
                 Save Final
               </Text>
             </View>
-
             <View style={{ position: "absolute", bottom: 80, right: 20 }}>
               <Text
                 onPress={() => {
@@ -1857,7 +1809,6 @@ class Canvas extends React.Component {
     );
   }
 }
-
 const styles = StyleSheet.create({
   loadingContainer: {
     height: "100%",
@@ -1870,7 +1821,6 @@ const styles = StyleSheet.create({
     flex: 1
   }
 });
-
 const mapDispatchToProps = dispatch => {
   return bindActionCreators(
     {
@@ -1885,7 +1835,6 @@ const mapDispatchToProps = dispatch => {
     dispatch
   );
 };
-
 const mapStateToProps = state => {
   return {
     items: state.items,
@@ -1893,7 +1842,6 @@ const mapStateToProps = state => {
     user: state.user
   };
 };
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps

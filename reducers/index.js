@@ -24,7 +24,7 @@ import {
 } from "../actions/items";
 import { defaultItems } from "../data/defaultItems";
 
-let logoMaxPixelsDefault = 120;
+let logoMaxPixelsDefault = 80;
 let logoWidth = 0;
 let logoHeight = 0;
 let url = "";
