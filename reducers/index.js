@@ -12,16 +12,7 @@ import {
   ADD_USER_LOGOS_TO_REDUCER
 } from "../actions/user";
 import { TOGGLE_LOADING } from "../actions/loading";
-import {
-  CHANGE_GARMENT,
-  GET_DEFAULT_ITEMS,
-  CHOOSE_LOGO,
-  CHANGE_LOGO_DIMENSIONS,
-  REMEMBER_LOGO_LOCATION,
-  CHANGE_LOGO_POSITION,
-  TOGGLE_FRONT_OR_BACK,
-  SET_CURRENT_SCALE
-} from "../actions/items";
+import { CHANGE_GARMENT, TOGGLE_FRONT_OR_BACK } from "../actions/items";
 import { defaultItems } from "../data/defaultItems";
 
 let logoMaxPixelsDefault = 80;
@@ -167,23 +158,12 @@ const items = (state = initialItemState, action) => {
         shirtUrl: action.payload.url,
         backShirtUrl: action.payload.backURL
       };
-    case GET_DEFAULT_ITEMS:
-      console.log("getting default items at index");
-      return {
-        ...state,
-        shirtUrl: defaultItems[0].url,
-        backShirtUrl: defaultItems[0].backURL
-      };
     case TOGGLE_FRONT_OR_BACK:
       console.log("toggling front or back at index");
       return {
         ...state,
         front: !state.front
       };
-    case SET_CURRENT_SCALE:
-      console.log("setting scale at index.js/reducer");
-      console.log(action);
-      return state;
     default:
       return state;
   }

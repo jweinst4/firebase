@@ -10,7 +10,6 @@ export const LOGIN = "LOGIN";
 export const SIGNUP = "SIGNUP";
 export const CLEAR_USER = "CLEAR_USER";
 export const ADD_USER_LOGOS_TO_REDUCER = "ADD_USER_LOGOS_TO_REDUCER";
-export const LOGO_TEST = "LOGO_TEST";
 
 export const updateEmail = email => {
   return {

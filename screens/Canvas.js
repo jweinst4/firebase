@@ -8,7 +8,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   Modal,
-  Animated,
   TextInput,
   Dimensions
 } from "react-native";
@@ -22,12 +21,7 @@ import ImagePickerComponent from "../components/ImagePickerComponent";
 import { screenShotUtility } from "../utilities/screenShotUtility";
 import { toggleLoading } from "../actions/loading";
 import { login, getLogos } from "../actions/user";
-import {
-  changeGarment,
-  changeLogoDimensions,
-  toggleFrontOrBack,
-  setCurrentScale
-} from "../actions/items";
+import { changeGarment, toggleFrontOrBack } from "../actions/items";
 let currentVersion = "v7";
 let colors = [
   "black",
@@ -78,7 +72,6 @@ class Canvas extends React.Component {
       showTextDetail: false,
       logoChangeScalar: 1.1,
       textChangeScalar: 1.1,
-      currentScale: 1,
       allLogosFront: [],
       allLogosBack: [],
       allTextFront: [],
@@ -1797,9 +1790,7 @@ const mapDispatchToProps = dispatch => {
       toggleLoading,
       login,
       getLogos,
-      changeLogoDimensions,
-      toggleFrontOrBack,
-      setCurrentScale
+      toggleFrontOrBack
     },
     dispatch
   );

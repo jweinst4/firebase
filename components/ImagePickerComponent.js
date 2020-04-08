@@ -1,24 +1,10 @@
 // https://github.com/expo/examples/blob/master/with-firebase-storage-upload/App.js
 
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Button,
-  StatusBar,
-  TouchableOpacity
-} from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import {
-  updateEmail,
-  updatePassword,
-  login,
-  getUser,
-  updateUser,
-  addImage
-} from "../actions/user";
+import { addImage } from "../actions/user";
 import { toggleLoading } from "../actions/loading";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
@@ -169,27 +155,6 @@ class ImagePickerComponent extends React.Component {
 
     return pickerResult;
   };
-
-  // getUserInfo = async calculatedUrlAndUser => {
-  //   console.log("in get user info");
-  //   // console.log(calculatedUrlAndUser);
-
-  //   let name2 = calculatedUrlAndUser[0].displayName;
-  //   console.log(name2);
-
-  //   let updatedRoute2 = "https://tester-859c6.firebaseio.com/users/.json?";
-
-  //   let response2 = await fetch(updatedRoute2, {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json;charset=utf-8"
-  //     }
-  //   });
-
-  //   console.log(response2);
-
-  //   return response2;
-  // };
 
   getCurrentImageMaxKey = async calculatedUrlAndUser => {
     // console.log("in get current image max key");
@@ -357,11 +322,6 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = dispatch => {
   return bindActionCreators(
     {
-      updateEmail,
-      updatePassword,
-      login,
-      getUser,
-      updateUser,
       toggleLoading,
       addImage
     },
